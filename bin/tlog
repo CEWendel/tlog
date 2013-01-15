@@ -1,9 +1,13 @@
 #!/usr/bin/env ruby
 
 require 'tlog'
-require 'rubygems'
-require 'commander/import'
+require 'tlog/application'
+require 'tlog/input'
+require 'tlog/output'
+#require 'rubygems'
+#require 'commander/import'
 
+=begin
 # :name is optional, otherwise uses the basename of this executable
 program :name, 'Foo Bar'
 program :version, '1.0.0'
@@ -27,6 +31,24 @@ command :bar do |c|
     say "#{options.prefix}bar#{options.suffix}"
   end
 end
+=end
+#app = Tlog::App.new(ARGV.dup)
+# exit(app.run)
 
+#exit(shell.run(app))
+
+
+input = Tlog::Input.new(ARGV.dup)
+output = Tlog::Output.new($stdout, $stderr)
+app = Tlog::Application.new(input,output)
+
+exit(app.run)
+
+=begin
+input = Tlog::App::Input.new(ARGV.dup)
+shell = Tlog::App::Shell.new
+
+exit(shell.run(input))
+=end
 
 #puts Tlog.hi(ARGV[0])
