@@ -31,18 +31,26 @@ class Tlog::Application
 		return outcome
 	end
 
-	def commands
-		@commands = [
-			Tlog::Command::Test.new
+	def all_commands
+		commands = [
+			Tlog::Command::Test.new,
+			Tlog::Command::Init.new,
 		]
+		commands.each do |command|
+			command.storage = working_dir_storage
+		end
+		return commands
 	end
 
 
 	private
 
+	def working_dir_storage
+		Tlog::Storage.new(Dir.pwd)
+	end
 
 	def find(command_name)
-		commands.select { |command| command.name == command_name }.first
+		all_commands.select { |command| command.name == command_name }.first
 	end
 
 	def prepare_command(command)

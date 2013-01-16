@@ -1,7 +1,7 @@
 
 class Tlog::Command
 
-	attr_accessor :project
+	attr_accessor :storage
 
 	def execute(input, output)
 	end
