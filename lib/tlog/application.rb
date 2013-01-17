@@ -4,7 +4,6 @@ require "optparse"
 class Tlog::Application
 
 	def initialize(input, output)
-		puts "application initialize called"
 		@input = input
 		@output = output
 	end
@@ -35,6 +34,8 @@ class Tlog::Application
 		commands = [
 			Tlog::Command::Test.new,
 			Tlog::Command::Init.new,
+			Tlog::Command::Start.new,
+			Tlog::Command::Stop.new,
 		]
 		commands.each do |command|
 			command.storage = working_dir_storage
@@ -65,6 +66,7 @@ class Tlog::Application
 	def run_command(command)
 		if !command.nil?
 			command.execute(@input, @output)
+			true
 		else
 			raise Tlog::Error::CommandNotFound, "Command not found"
 		end

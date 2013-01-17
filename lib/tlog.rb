@@ -25,6 +25,10 @@ end
 require 'tlog/command'
 require 'tlog/command/test'
 require 'tlog/command/init'
+require 'tlog/command/start'
+require 'tlog/command/stop'
+
+require 'tlog/task'
 
 require 'tlog/storage'
 
