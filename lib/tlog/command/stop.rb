@@ -6,9 +6,9 @@ class Tlog::Command::Stop < Tlog::Command
 	end 
 
 	def execute(input, output)
-		output.line("execute on start command") #change to out
+		output.line("execute on stop command") #change to out
 		#create_task(input.args[0])
-		stop_task
+		raise Tlog::Error::CommandInvalid, "Task not in progress" unless stop_task(input.args[0])
 		#if input.args[0].nil?
 			# no task name given
 			#@storage.create_current
@@ -31,8 +31,8 @@ class Tlog::Command::Stop < Tlog::Command
 
 	private
 
-	def stop_task
-		@storage.delete_current
+	def stop_task(task_name)
+		@storage.delete_current(task_name)
 	end
 
 end

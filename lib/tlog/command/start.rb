@@ -7,7 +7,7 @@ class Tlog::Command::Start < Tlog::Command
 
 	def execute(input, output)
 		output.line("execute on stop command") #change to out
-		create_task(input.args[0])
+		raise Tlog::Error::CommandInvalid, "Task already in progress" unless create_task(input.args[0])
 		#if input.args[0].nil?
 			# no task name given
 			#@storage.create_current
@@ -33,6 +33,6 @@ class Tlog::Command::Start < Tlog::Command
 	def create_task(task_name)
 		raise Tlog::Error::CommandInvalid, "Must specify task name" if !task_name
 		task = Tlog::Task.new(task_name, Time.new)
-		@storage.create_current(task)
+		@storage.update_current(task)
 	end
 end
