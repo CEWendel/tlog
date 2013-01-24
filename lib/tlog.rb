@@ -18,6 +18,9 @@ end
 module Tlog
 	Version = "0.0.0"
 
+	module Storage
+	end
+
 	module Error
 	end
 end
@@ -30,7 +33,10 @@ require 'tlog/command/stop'
 
 require 'tlog/task'
 
-require 'tlog/storage'
+require 'tlog/task_entry'
+
+require 'tlog/storage/disk'
+require 'tlog/storage/task_store'
 
 require 'tlog/error'
 

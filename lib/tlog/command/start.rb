@@ -32,7 +32,7 @@ class Tlog::Command::Start < Tlog::Command
 
 	def create_task(task_name)
 		raise Tlog::Error::CommandInvalid, "Must specify task name" if !task_name
-		task = Tlog::Task.new(task_name, Time.new)
-		@storage.update_current(task)
+		#task = Tlog::Task.new(task_name, Time.new)
+		@storage.update_current(task_name)
 	end
 end
