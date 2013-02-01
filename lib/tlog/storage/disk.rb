@@ -19,7 +19,7 @@ class Tlog::Storage::Disk
 			FileUtils.mkdir_p(tasks_path)
 			true
 		else
-			nil
+			false
 		end
 	end
 
@@ -32,7 +32,7 @@ class Tlog::Storage::Disk
 			start_task(task_name)
 			true
 		else
-			nil
+			false
 		end
 	end
 
@@ -40,16 +40,27 @@ class Tlog::Storage::Disk
 		puts "delete_current called, task name is #{task_name}"
 		if File.exists?(filename_for_current)
 			#create_finished_task(task_name)
-			current_task_name = File.open(filename_for_current).first
 			parse_current
-			FileUtils.rm(filename_for_current) if current_task_name.strip == task_name
+			FileUtils.rm(filename_for_current) if current_task_name == task_name
 		else
-			nil
+			false
 		end
 	end	
 
+	def show_active
+		active_tasks = all_task_dirs
+		active_tasks.each do |task|
+			task_name = task.basename.to_s
+			task_name << "(active)" if current_task_name == task_name
+			puts "#{task_name}"
+		end
+	end
 
 	private
+
+	def all_task_dirs
+		Pathname.new(tasks_path).children.select { |c| c.directory? }
+	end
 
 	def write_task_to_current(task_name)
 		content = task_name + "\n" + Time.new.to_s
@@ -58,6 +69,10 @@ class Tlog::Storage::Disk
 
 	def current_exists?
 		Dir.exists?(filename_for_current)
+	end
+
+	def current_task_name
+		File.open(filename_for_current).first.strip unless !File.exists?(filename_for_current)
 	end
 
 	def parse_current
