@@ -46,8 +46,8 @@ class Tlog::Storage::Task_Store
 
 	def write_to_entry(path)
 		previous_entry ? content = previous_entry : content = "none"
-		time_log = @entry.start_time + " " + @entry.end_time
-		content = content + time_log
+		time_log = @entry.start_time.to_s + " " + @entry.end_time.to_s
+		content = content + "\n" + time_log
 		File.open(path, 'w'){ |f| f.write(content) }
 	end
 

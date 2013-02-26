@@ -1,3 +1,4 @@
+require "chronic_duration"
 
 class Tlog::Command::Start < Tlog::Command
 
@@ -7,7 +8,17 @@ class Tlog::Command::Start < Tlog::Command
 
 	def execute(input, output)
 		output.line("execute on stop command") #change to out
-		raise Tlog::Error::CommandInvalid, "Task already in progress" unless create_task(input.args[0])
+
+		#def determine_action(input)
+   # if input.arguments[0].nil?
+    #  :list_postal_addresses
+    #elsif input.options.empty?
+     # :show_postal_address
+    #else
+    #  :set_postal_address
+    #end
+  	#end
+		raise Tlog::Error::CommandInvalid, "Task already in progress" unless create_task(input.args[0], input.options[:length])
 		#if input.args[0].nil?
 			# no task name given
 			#@storage.create_current
@@ -26,13 +37,17 @@ class Tlog::Command::Start < Tlog::Command
 
 	def options(parser, options)
 		parser.banner = "usage: tlog start <task_name>"
+
+		parser.on("-l", "--length <task_length>") do |length|
+      		options[:length] = length
+    	end
 	end
 
 	private
 
-	def create_task(task_name)
+	def create_task(task_name, task_length)
+		task_length = ChronicDuration.parse(task_length) if task_length
 		raise Tlog::Error::CommandInvalid, "Must specify task name" if !task_name
-		#task = Tlog::Task.new(task_name, Time.new)
-		@storage.update_current(task_name)
+		@storage.update_current(task_name, task_length)
 	end
 end

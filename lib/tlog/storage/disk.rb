@@ -2,6 +2,8 @@
 require 'fileutils'
 require 'securerandom'
 require 'pathname'
+require 'time'
+require 'chronic'
 
 class Tlog::Storage::Disk
 
@@ -23,12 +25,12 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def update_current(task_name)
+	def update_current(task_name, task_length)
 		puts "update_current called, task name is #{task_name}"
 		#raise Tlog::Error::CommandInvalid, "Task already in progress" if File.exists?(filename_for_current) 
 		if !File.exists?(filename_for_current)
 			FileUtils.touch(filename_for_current)
-			write_task_to_current(task_name)
+			write_task_to_current(task_name, task_length)
 			start_task(task_name)
 			true
 		else
@@ -47,23 +49,19 @@ class Tlog::Storage::Disk
 		end
 	end	
 
-	def show_active
-		active_tasks = all_task_dirs
-		active_tasks.each do |task|
-			task_name = task.basename.to_s
-			task_name << "(active)" if current_task_name == task_name
-			puts "#{task_name}"
-		end
+	def current_task_name
+		File.open(filename_for_current).first.strip unless !File.exists?(filename_for_current)
 	end
-
-	private
 
 	def all_task_dirs
 		Pathname.new(tasks_path).children.select { |c| c.directory? }
 	end
 
-	def write_task_to_current(task_name)
+	private
+
+	def write_task_to_current(task_name, task_length)
 		content = task_name + "\n" + Time.new.to_s
+		content << "\n" + task_length.to_s if task_length
 		File.open(filename_for_current, 'w') { |f| f.write(content)}
 	end
 
@@ -71,20 +69,25 @@ class Tlog::Storage::Disk
 		Dir.exists?(filename_for_current)
 	end
 
-	def current_task_name
-		File.open(filename_for_current).first.strip unless !File.exists?(filename_for_current)
-	end
-
 	def parse_current
 		contents = File.read(filename_for_current)
 		task_name = contents.split(' ', 2)[0]
 		contents.slice! task_name
 		start_time = contents
-		stop_task(task_name, start_time)
+		split_contents = contents.split(' ', 4)
+		if split_contents.length == 4
+			task_length = split_contents[3]
+			contents.slice! task_length
+			start_time = contents
+		end
+		puts "task_name is #{task_name}"
+		puts "start time is #{start_time.strip}"
+		puts "task_length is #{task_length}"
+		stop_task(task_name, start_time, task_length.to_i)
 	end
 
-	def stop_task(name, start_time)
-		new_entry = Tlog::Task_Entry.new(start_time, Time.new.to_s)
+	def stop_task(name, start_time, task_length)
+		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, task_length)
 		update_task_storage(task_path(name), new_entry)
 		@task_storage.create_entry
 	end
