@@ -1,4 +1,3 @@
-
 require 'fileutils'
 require 'securerandom'
 require 'pathname'
@@ -16,7 +15,6 @@ class Tlog::Storage::Disk
 	end
 
 	def init_project	
-		#raise Tlog::Error::CommandInvalid, "Project already initialized" if File.exists?(filename_for_working_dir)
 		if !File.exists?(filename_for_working_dir)
 			FileUtils.mkdir_p(tasks_path)
 			true
@@ -80,14 +78,12 @@ class Tlog::Storage::Disk
 			contents.slice! task_length
 			start_time = contents
 		end
-		puts "task_name is #{task_name}"
-		puts "start time is #{start_time.strip}"
-		puts "task_length is #{task_length}"
-		stop_task(task_name, start_time, task_length.to_i)
+		stop_task(task_name, start_time, task_length)
 	end
 
 	def stop_task(name, start_time, task_length)
-		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, task_length)
+		@task_storage.initial_tlog_length = task_length if task_length
+		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new)
 		update_task_storage(task_path(name), new_entry)
 		@task_storage.create_entry
 	end

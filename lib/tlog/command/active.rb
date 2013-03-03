@@ -41,9 +41,7 @@ class Tlog::Command::Active < Tlog::Command
 			out_string << task_name + "\n"
 			task_active = true
 		end
-
 		out_string.prepend("No time logs active. Existing time logs:" + "\n") if task_active
-
 		output.line(out_string)
 	end
 
