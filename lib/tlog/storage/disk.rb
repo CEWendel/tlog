@@ -25,7 +25,6 @@ class Tlog::Storage::Disk
 
 	def update_current(task_name, task_length)
 		puts "update_current called, task name is #{task_name}"
-		#raise Tlog::Error::CommandInvalid, "Task already in progress" if File.exists?(filename_for_current) 
 		if !File.exists?(filename_for_current)
 			FileUtils.touch(filename_for_current)
 			write_task_to_current(task_name, task_length)
@@ -36,16 +35,21 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def delete_current(task_name) # Change this method name or add one
-		puts "delete_current called, task name is #{task_name}"
-		if File.exists?(filename_for_current)
-			#create_finished_task(task_name)
-			parse_current
-			FileUtils.rm(filename_for_current) if current_task_name == task_name
+	def stop_tlog(task_name)
+		parse_current if File.exists?(filename_for_current)
+		delete_current(task_name)
+	end
+
+	def delete_tlog(tlog_name)
+		if Dir.exists?(task_path(tlog_name))
+			all_task_dirs.each do |tlog_path|
+				tlog_basename = tlog_path.basename.to_s
+				FileUtils.rm_rf(tlog_path) if tlog_basename == tlog_name
+			end
 		else
 			false
 		end
-	end	
+	end
 
 	def current_task_name
 		File.open(filename_for_current).first.strip unless !File.exists?(filename_for_current)
@@ -56,6 +60,15 @@ class Tlog::Storage::Disk
 	end
 
 	private
+
+	def delete_current(task_name) # Change this method name or add one
+		puts "delete_current called, task name is #{task_name}"
+		if File.exists?(filename_for_current)
+			FileUtils.rm(filename_for_current) if current_task_name == task_name
+		else
+			false
+		end
+	end	
 
 	def write_task_to_current(task_name, task_length)
 		content = task_name + "\n" + Time.new.to_s
@@ -95,14 +108,6 @@ class Tlog::Storage::Disk
 	def update_task_storage(task_path, task_entry)
 		@task_storage.task_path = task_path
 		@task_storage.entry = task_entry
-	end
-
-	def delete_task(task_name)
-		if Dir.exists?(task_path(task_name))
-			FileUtils.rmdir(task_path(task_name))
-		else
-			nil
-		end
 	end
 
 	def task_path(task_name)

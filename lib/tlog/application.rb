@@ -37,6 +37,7 @@ class Tlog::Application
 			Tlog::Command::Start.new,
 			Tlog::Command::Stop.new,
 			Tlog::Command::Active.new,
+			Tlog::Command::Delete.new,
 		]
 		commands.each do |command|
 			command.storage = working_dir_storage

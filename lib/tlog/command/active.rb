@@ -32,6 +32,7 @@ class Tlog::Command::Active < Tlog::Command
 	private
 
 	def print_time_entry(output)
+		# should this be done in disk?
 		active_tasks = @storage.all_task_dirs
 		task_active = false
 		out_string = ""

@@ -36,7 +36,6 @@ class Tlog::Storage::Task_Store
 	def get_tlog_length
 		content = File.read(head_path)
 		split_contents = content.split(' ', 2)
-		puts "split_contents are #{split_contents}"
 		if split_contents.length == 2
 			split_contents[1].to_i
 		else
