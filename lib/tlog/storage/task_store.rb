@@ -12,7 +12,6 @@ class Tlog::Storage::Task_Store
 	#	@task_path = path
 	#end
 
-	
 	def create_entry
 		puts "Create entry called"
 		puts "Entry length is #{@entry.length}"
@@ -21,6 +20,12 @@ class Tlog::Storage::Task_Store
 		FileUtils.touch(task_entry_path)
 		write_to_entry(task_entry_path)
 		update_head(@entry.length)
+	end
+
+	def print_tlog
+		hash_value = get_hash_value
+		entry = Tlog::Task_Entry.new(nil, nil, hash_value)
+		update_cur_entry(cur_entry)
 	end
 
 	private
@@ -40,6 +45,28 @@ class Tlog::Storage::Task_Store
 			split_contents[1].to_i
 		else
 			nil
+		end
+	end
+
+	def get_hash_value
+		File.open(head_path).first.strip
+	end
+
+	def update_cur_entry(entry)
+		if File.exists?(task_entry_path)
+			i = 1
+			start_time = ""
+			end_time = ""
+			contents = File.read(task_entry_path)
+			split_contents = contents.split(' ',7)
+			contents.slice! split_contents[0]
+			until i > 7
+				if i < 4
+					start_time << split_contents[i] 
+				else
+					end_time << split_contents[i]
+				end
+			end
 		end
 	end
 
@@ -77,7 +104,6 @@ class Tlog::Storage::Task_Store
 		previous_entry ? content = previous_entry : content = "none"
 		time_log = @entry.start_time.to_s + " " + @entry.end_time.to_s
 		content += "\n" + time_log
-		#content += "\n" + @entry.length.to_s
 		File.open(path, 'w'){ |f| f.write(content) }
 	end
 

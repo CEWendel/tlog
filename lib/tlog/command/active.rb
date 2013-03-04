@@ -38,11 +38,13 @@ class Tlog::Command::Active < Tlog::Command
 		out_string = ""
 		active_tasks.each do |task|
 			task_name = task.basename.to_s
-			task_name << "(active)" if @storage.current_task_name == task_name
+			if @storage.current_task_name == task_name
+				task_name << "(active)" 
+				task_active = true
+			end
 			out_string << task_name + "\n"
-			task_active = true
 		end
-		out_string.prepend("No time logs active. Existing time logs:" + "\n") if task_active
+		out_string.prepend("No time logs active. Existing time logs:" + "\n") unless task_active
 		output.line(out_string)
 	end
 

@@ -23,21 +23,23 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def update_current(task_name, task_length)
-		puts "update_current called, task name is #{task_name}"
-		if !File.exists?(filename_for_current)
-			FileUtils.touch(filename_for_current)
-			write_task_to_current(task_name, task_length)
-			start_task(task_name)
+	def start_tlog(tlog_name, tlog_length)
+		if update_current(tlog_name, tlog_length)
+			start_task(tlog_name)
 			true
 		else
 			false
 		end
 	end
 
-	def stop_tlog(task_name)
-		parse_current if File.exists?(filename_for_current)
-		delete_current(task_name)
+	def stop_tlog(tlog_name)
+		tlog_name = current_task_name unless tlog_name
+		if parse_current
+			delete_current(tlog_name)
+			true
+		else
+			false
+		end
 	end
 
 	def delete_tlog(tlog_name)
@@ -51,8 +53,16 @@ class Tlog::Storage::Disk
 		end
 	end
 
+	def print_tlog(tlog_name)
+		#@task_storage.initial_tlog_length = task_length if task_length
+		#new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new)
+		#update_task_storage(task_path(name), new_entry)
+		#@task_storage.create_entry
+		
+	end
+
 	def current_task_name
-		File.open(filename_for_current).first.strip unless !File.exists?(filename_for_current)
+		File.open(filename_for_current).first.strip if File.exists?(filename_for_current)
 	end
 
 	def all_task_dirs
@@ -60,6 +70,17 @@ class Tlog::Storage::Disk
 	end
 
 	private
+
+	def update_current(task_name, tlog_length)
+		puts "update_current called, task name is #{task_name}"
+		if !File.exists?(filename_for_current)
+			FileUtils.touch(filename_for_current)
+			write_task_to_current(task_name, tlog_length)
+			true
+		else
+			false
+		end
+	end
 
 	def delete_current(task_name) # Change this method name or add one
 		puts "delete_current called, task name is #{task_name}"
@@ -81,17 +102,22 @@ class Tlog::Storage::Disk
 	end
 
 	def parse_current
-		contents = File.read(filename_for_current)
-		task_name = contents.split(' ', 2)[0]
-		contents.slice! task_name
-		start_time = contents
-		split_contents = contents.split(' ', 4)
-		if split_contents.length == 4
-			task_length = split_contents[3]
-			contents.slice! task_length
+		if File.exists?(filename_for_current)
+			contents = File.read(filename_for_current)
+			task_name = contents.split(' ', 2)[0]
+			contents.slice! task_name
 			start_time = contents
+			split_contents = contents.split(' ', 4)
+			if split_contents.length == 4
+				task_length = split_contents[3]
+				contents.slice! task_length
+				start_time = contents
+			end
+			stop_task(task_name, start_time, task_length)
+			true
+		else
+			false
 		end
-		stop_task(task_name, start_time, task_length)
 	end
 
 	def stop_task(name, start_time, task_length)

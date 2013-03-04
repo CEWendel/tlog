@@ -18,7 +18,7 @@ class Tlog::Command::Start < Tlog::Command
     #  :set_postal_address
     #end
   	#end
-		raise Tlog::Error::CommandInvalid, "Task already in progress" unless create_task(input.args[0], input.options[:length])
+		raise Tlog::Error::CommandInvalid, "Task already in progress" unless create_entry(input.args[0], input.options[:length])
 		#if input.args[0].nil?
 			# no task name given
 			#@storage.create_current
@@ -36,18 +36,18 @@ class Tlog::Command::Start < Tlog::Command
 	end
 
 	def options(parser, options)
-		parser.banner = "usage: tlog start <task_name>"
+		parser.banner = "usage: tlog start <tlog_name>"
 
-		parser.on("-l", "--length <task_length>") do |length|
+		parser.on("-l", "--length <tlog_length>") do |length|
       		options[:length] = length
     	end
 	end
 
 	private
 
-	def create_task(task_name, task_length)
-		task_length = ChronicDuration.parse(task_length) if task_length
-		raise Tlog::Error::CommandInvalid, "Must specify task name" if !task_name
-		@storage.update_current(task_name, task_length)
+	def create_entry(tlog_name, tlog_length)
+		tlog_length = ChronicDuration.parse(tlog_length) if tlog_length
+		raise Tlog::Error::CommandInvalid, "Must specify tlog name" unless tlog_name
+		@storage.start_tlog(tlog_name, tlog_length)
 	end
 end
