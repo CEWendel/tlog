@@ -1,16 +1,12 @@
 require 'fileutils'
 require 'securerandom'
+require 'time'
 
 class Tlog::Storage::Task_Store
 
 	attr_accessor :entry
 	attr_accessor :task_path
 	attr_accessor :initial_tlog_length
-
-	#def initialize(task, path)
-	#	@task = task
-	#	@task_path = path
-	#end
 
 	def create_entry
 		puts "Create entry called"
@@ -22,20 +18,16 @@ class Tlog::Storage::Task_Store
 		update_head(@entry.length)
 	end
 
-	def print_tlog
-		hash_value = get_hash_value
-		entry = Tlog::Task_Entry.new(nil, nil, hash_value)
-		update_cur_entry(cur_entry)
-	end
-
-	private
-
-	def previous_entry
-		if File.exists?(head_path)
-			previous_hash = File.read(head_path)
-		else
-			nil
-		end
+	def get_tlog_entries
+		commands = Array.new
+		hash_value = head_hash_value
+		begin 
+			@entry = Tlog::Task_Entry.new(nil, nil, hash_value)
+			return nil unless update_cur_entry
+			commands << @entry
+			hash_value = entry_hash_value
+		end until hash_value == "none"
+		return commands
 	end
 
 	def get_tlog_length
@@ -48,25 +40,44 @@ class Tlog::Storage::Task_Store
 		end
 	end
 
-	def get_hash_value
+	private
+
+	def previous_entry
+		if File.exists?(head_path)
+			previous_hash = File.read(head_path)
+		else
+			nil
+		end
+	end
+
+	def head_hash_value
 		File.open(head_path).first.strip
 	end
 
-	def update_cur_entry(entry)
+	def entry_hash_value
+		File.open(task_entry_path).first.strip
+	end
+
+	def update_cur_entry
 		if File.exists?(task_entry_path)
-			i = 1
 			start_time = ""
 			end_time = ""
 			contents = File.read(task_entry_path)
 			split_contents = contents.split(' ',7)
 			contents.slice! split_contents[0]
-			until i > 7
+			for i in 1..6
 				if i < 4
-					start_time << split_contents[i] 
+					start_time << split_contents[i] + " "
 				else
-					end_time << split_contents[i]
+					end_time << split_contents[i] + " "
 				end
 			end
+			@entry.start_time = Time.parse(start_time)
+			@entry.end_time = Time.parse(end_time)
+			@entry.reset_length
+			true
+		else
+			false
 		end
 	end
 
@@ -82,13 +93,11 @@ class Tlog::Storage::Task_Store
 		create_head unless File.exists?(head_path)
 		content = @entry.hash
 		if initial_tlog_length
-			content += "\n" + initial_tlog_length if initial_tlog_length
+			tlog_length = initial_tlog_length.to_i
 		else
-			if get_tlog_length
-				# Update HEAD file with new time log length 
-				content += "\n" + update_tlog_length(entry_length, get_tlog_length)
-			end
-		end 
+			tlog_length = get_tlog_length if get_tlog_length
+		end
+		content += "\n" + update_tlog_length(entry_length, tlog_length)
 		File.open(head_path, 'w') { |f| f.write(content) }
 	end
 

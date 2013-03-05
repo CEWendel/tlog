@@ -53,12 +53,22 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def print_tlog(tlog_name)
-		#@task_storage.initial_tlog_length = task_length if task_length
-		#new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new)
-		#update_task_storage(task_path(name), new_entry)
-		#@task_storage.create_entry
-		
+	def tlog_entries(tlog_name)
+		if task_path(tlog_name)
+			@task_storage.task_path = task_path(tlog_name)
+			@task_storage.get_tlog_entries
+		else
+			nil
+		end
+	end
+
+	def tlog_length(tlog_name)
+		if task_path(tlog_name)
+			@task_storage.task_path = task_path(tlog_name)
+			@task_storage.get_tlog_length
+		else
+			nil
+		end
 	end
 
 	def current_task_name
@@ -122,7 +132,7 @@ class Tlog::Storage::Disk
 
 	def stop_task(name, start_time, task_length)
 		@task_storage.initial_tlog_length = task_length if task_length
-		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new)
+		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil)
 		update_task_storage(task_path(name), new_entry)
 		@task_storage.create_entry
 	end

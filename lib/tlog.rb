@@ -32,6 +32,7 @@ require 'tlog/command/start'
 require 'tlog/command/stop'
 require 'tlog/command/active'
 require 'tlog/command/delete'
+require 'tlog/command/log'
 
 require 'tlog/task'
 

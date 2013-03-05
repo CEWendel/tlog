@@ -6,11 +6,15 @@ class Tlog::Task_Entry
 	attr_accessor :length
 	attr_accessor :hash
 
-	def initialize(start_time = "", end_time = "", hash = "")
+	def initialize(start_time, end_time, hash)
 		@start_time = start_time
 		@end_time = end_time
-		@length = time_difference
 		@hash = hash 
+		reset_length
+	end
+
+	def reset_length
+		@length = time_difference if @start_time && @end_time
 	end
 
 	private
