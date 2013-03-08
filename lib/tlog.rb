@@ -23,6 +23,9 @@ module Tlog
 
 	module Error
 	end
+
+	module Format
+	end
 end
 
 require 'tlog/command'
@@ -40,6 +43,10 @@ require 'tlog/task_entry'
 
 require 'tlog/storage/disk'
 require 'tlog/storage/task_store'
+
+require 'tlog/format/seconds'
+require 'tlog/format/date_time'
+
 
 require 'tlog/error'
 
