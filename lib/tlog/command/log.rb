@@ -33,12 +33,27 @@ class Tlog::Command::Log < Tlog::Command
 	def log_tlog(tlog_name, length_threshold, output)
 		entries = @storage.tlog_entries(tlog_name)
 		tlog_length = @storage.tlog_length(tlog_name)
+		if @storage.start_time_string && is_current_task_name?(tlog_name)
+			start_time = Time.parse(@storage.start_time_string)
+		end
 		length_threshold = ChronicDuration.parse(length_threshold) if length_threshold
 		if length_threshold and tlog_length
 			return if (tlog_length - length_threshold) > 0
 		end
 		output.line("Time entries for tlog: " + tlog_name)
-		output.line("Time left: #{@seconds_format.duration tlog_length}") if tlog_length
+		print_time_left(tlog_name, tlog_length, start_time, output)
+		log_entries(entries, output)
+	end
+
+	def log_all(length_threshold, output)
+		@storage.all_task_dirs.each do |tlog_path|
+			tlog_basename = tlog_path.basename.to_s
+			log_tlog(tlog_basename, length_threshold, output)
+		end
+	end
+
+	def log_entries(entries, output)
+		# Print out current if needed here
 		entries.each do |entry|
 			out_str = ""
 			out_str += "#{@date_time_format.timestamp entry.start_time}"
@@ -48,10 +63,25 @@ class Tlog::Command::Log < Tlog::Command
 		end
 	end
 
-	def log_all(length_threshold, output)
-		@storage.all_task_dirs.each do |tlog_path|
-			tlog_basename = tlog_path.basename.to_s
-			log_tlog(tlog_basename, length_threshold, output)
+	def print_time_left(tlog_name, tlog_length, current_start_time, output)
+		if is_current_task_name?(tlog_name)
+			output.line("Time left: #{@seconds_format.duration update_log_length(tlog_length)}")
+			formatted_length = @seconds_format.duration @storage.time_since_start
+			output.line("#{@date_time_format.timestamp current_start_time} -> \t\t       Length: #{formatted_length}")
+		else
+			output.line("Time left: #{@seconds_format.duration tlog_length}") if tlog_length
+		end
+	end
+
+	def update_log_length(tlog_length)
+		tlog_length - @storage.time_since_start
+	end
+
+	def is_current_task_name?(tlog_name)
+		if @storage.current_task_name == tlog_name
+			true
+		else
+			false
 		end
 	end
 end

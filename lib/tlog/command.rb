@@ -1,13 +1,8 @@
 class Tlog::Command
 
 	attr_accessor :storage
-	attr_reader :seconds_format
-	attr_reader :timestamp_format
-
-	def initialize
-		@seconds_format = Tlog::Format::Seconds
-		@date_time_format = Tlog::Format::DateTime
-	end
+	attr_accessor :seconds_format
+	attr_accessor :date_time_format
 
 	def execute(input, output)
 		raise NotImplementedError

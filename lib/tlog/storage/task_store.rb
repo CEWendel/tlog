@@ -1,3 +1,4 @@
+# Should be renamed to "log_store"
 require 'fileutils'
 require 'securerandom'
 require 'time'
@@ -81,7 +82,7 @@ class Tlog::Storage::Task_Store
 		end
 	end
 
-	def update_tlog_length(entry_length, tlog_length)
+	def lengths_differnce(entry_length, tlog_length)
 		new_tlog_length = 0 
 		if (tlog_length - entry_length) > 0
 			new_tlog_length = tlog_length - entry_length
@@ -97,7 +98,7 @@ class Tlog::Storage::Task_Store
 		else
 			tlog_length = get_tlog_length if get_tlog_length
 		end
-		content += "\n" + update_tlog_length(entry_length, tlog_length)
+		content += "\n" + lengths_differnce(entry_length, tlog_length)
 		File.open(head_path, 'w') { |f| f.write(content) }
 	end
 

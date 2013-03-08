@@ -1,4 +1,4 @@
-
+# Should be renamed to "Entry"
 class Tlog::Task_Entry
 
 	attr_accessor :start_time

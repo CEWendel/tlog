@@ -34,7 +34,7 @@ class Tlog::Storage::Disk
 
 	def stop_tlog(tlog_name)
 		tlog_name = current_task_name unless tlog_name
-		if parse_current
+		if stop_current
 			delete_current(tlog_name)
 			true
 		else
@@ -66,6 +66,19 @@ class Tlog::Storage::Disk
 		if task_path(tlog_name)
 			@task_storage.task_path = task_path(tlog_name)
 			@task_storage.get_tlog_length
+		else
+			nil
+		end
+	end
+
+	def start_time_string
+		current_start_time if File.exists?(filename_for_current)
+	end
+
+	def time_since_start
+		if File.exists?(filename_for_current)
+			difference = Time.now - Time.parse(current_start_time)
+			difference.to_i
 		else
 			nil
 		end
@@ -111,22 +124,35 @@ class Tlog::Storage::Disk
 		Dir.exists?(filename_for_current)
 	end
 
-	def parse_current
+	def stop_current
 		if File.exists?(filename_for_current)
-			contents = File.read(filename_for_current)
-			task_name = contents.split(' ', 2)[0]
-			contents.slice! task_name
-			start_time = contents
-			split_contents = contents.split(' ', 4)
-			if split_contents.length == 4
-				task_length = split_contents[3]
-				contents.slice! task_length
-				start_time = contents
-			end
-			stop_task(task_name, start_time, task_length)
+			stop_task(current_task_name, current_start_time, current_log_length)
 			true
 		else
 			false
+		end
+	end
+
+	def current_start_time
+		contents = File.read(filename_for_current)
+		contents.slice! current_task_name
+		start_time = contents
+		split_contents = contents.split(' ', 4)
+		if split_contents.length == 4
+			contents.slice! split_contents[3]
+			start_time = contents
+		end
+		start_time
+	end
+
+	def current_log_length
+		contents = File.read(filename_for_current)
+		contents.slice! current_task_name
+		split_contents = contents.split(' ', 4)
+		if split_contents.length == 4
+			task_length = split_contents[3]
+		else
+			nil
 		end
 	end
 

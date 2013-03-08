@@ -42,6 +42,8 @@ class Tlog::Application
 		]
 		commands.each do |command|
 			command.storage = working_dir_storage
+			command.seconds_format = Tlog::Format::Seconds
+			command.date_time_format = Tlog::Format::DateTime
 		end
 		return commands
 	end
