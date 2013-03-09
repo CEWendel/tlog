@@ -36,11 +36,8 @@ class Tlog::Command::Log < Tlog::Command
 		if @storage.start_time_string && is_current_task_name?(tlog_name)
 			start_time = Time.parse(@storage.start_time_string)
 		end
-		length_threshold = ChronicDuration.parse(length_threshold) if length_threshold
-		if length_threshold and tlog_length
-			return if (tlog_length - length_threshold) > 0
-		end
-		output.line("Time entries for tlog: " + tlog_name)
+		return if length_exceeds_threshold?(tlog_length, length_threshold)
+		print_log_name(tlog_name, output)
 		print_time_left(tlog_name, tlog_length, start_time, output)
 		log_entries(entries, output)
 	end
@@ -63,13 +60,27 @@ class Tlog::Command::Log < Tlog::Command
 		end
 	end
 
+	def print_log_name(tlog_name, output)
+		output.line_yellow("Log: #{tlog_name}")
+	end
+
 	def print_time_left(tlog_name, tlog_length, current_start_time, output)
 		if is_current_task_name?(tlog_name)
-			output.line("Time left: #{@seconds_format.duration update_log_length(tlog_length)}")
+			output.line_red("Time left: #{@seconds_format.duration update_log_length(tlog_length)}")
 			formatted_length = @seconds_format.duration @storage.time_since_start
 			output.line("#{@date_time_format.timestamp current_start_time} -> \t\t       Length: #{formatted_length}")
 		else
-			output.line("Time left: #{@seconds_format.duration tlog_length}") if tlog_length
+			output.line_red("Time left: #{@seconds_format.duration tlog_length}") if tlog_length
+		end
+	end
+
+	def length_exceeds_threshold?(tlog_length, length_threshold)
+		if length_threshold and tlog_length
+			length_threshold = ChronicDuration.parse(length_threshold)
+			return true if tlog_length - length_threshold > 0
+			false
+		else
+			false
 		end
 	end
 

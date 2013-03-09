@@ -52,7 +52,7 @@ class Tlog::Application
 	private
 
 	def working_dir_storage
-		Tlog::Storage::Disk.new(Dir.pwd)
+		Tlog::Storage::Disk.new('.')
 	end
 
 	def find(command_name)

@@ -7,7 +7,7 @@ class Tlog::Command::Start < Tlog::Command
 	end 
 
 	def execute(input, output)
-		output.line("execute on stop command") #change to out
+		output.line("execute on start command") #change to out
 
 		#def determine_action(input)
    # if input.arguments[0].nil?

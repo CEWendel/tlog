@@ -3,15 +3,63 @@ require 'securerandom'
 require 'pathname'
 require 'time'
 require 'chronic'
+require 'git'
 
 class Tlog::Storage::Disk
 
+	attr_reader :git
+	attr_reader :tlog_dir
+	attr_reader :tlog_working
+	attr_reader :tlog_index
 	attr_reader :working_dir
 	attr_reader :task_storage
 
-	def initialize(working_dir)	
-		@working_dir = working_dir #ie /Users/ChrisW/Documents/Ruby/Jeah
-		@task_storage = Tlog::Storage::Task_Store.new
+	def initialize(git_dir)	
+		@git = Git.open(find_repo(git_dir))
+		proj_path = @git.dir.path.downcase.gsub(/[^a-z0-9]+/i, '-')
+		#def self.clean_string(string)
+      	#string.downcase.gsub(/[^a-z0-9]+/i, '-')
+    	#end
+		@tlog_dir = '~/.tlog'
+		@tlog_working = File.expand_path(File.join(@tlog_dir, proj_path, 'working'))
+		@tlog_index = File.expand_path(File.join(@tlog_dir, proj_path, 'index'))
+
+		bs = git.lib.branches_all.map{|b| b.first}
+
+		unless(bs.include?('tlog') && File.directory?(@tlog_working))
+			init_tlog_branch(bs.include?('tlog'))
+		end
+	end
+
+	# Code from 'ticgit', temporarily switches to tlog branch 
+	def in_branch(branch_exists = true)
+		unless File.directory?(@tlog_working)
+			FileUtils.mkdir_p(@tlog_working)
+		end
+
+		old_current = git.lib.branch_current
+		begin
+			git.lib.change_head_branch('tlog')
+			git.with_index(@tlog_index) do 
+				git.with_working(@tlog_working) do |wd|
+					git.lib.checkout('tlog') if branch_exists
+					yield wd
+				end
+			end
+		ensure
+			git.lib.change_head_branch(old_current)
+		end
+	end
+
+	def init_tlog_branch(tlog_branch = false)
+		in_branch(tlog_branch) do
+			File.open('.hold', 'w+'){|f| f.puts('hold')}
+			unless tlog_branch
+				puts "should be adding"
+				git.add
+				git.commit('creating the tlog branch')
+			end
+		end
 	end
 
 	def init_project	
@@ -24,11 +72,14 @@ class Tlog::Storage::Disk
 	end
 
 	def start_tlog(tlog_name, tlog_length)
-		if update_current(tlog_name, tlog_length)
-			start_task(tlog_name)
-			true
-		else
-			false
+		in_branch do |wd|
+			if update_current(tlog_name, tlog_length)
+				puts "here"
+				start_task(tlog_name)
+				true
+			else
+				false
+			end
 		end
 	end
 
@@ -68,6 +119,17 @@ class Tlog::Storage::Disk
 			@task_storage.get_tlog_length
 		else
 			nil
+		end
+	end
+
+	def find_repo(dir)
+		full = File.expand_path(dir)
+		ENV["GIT_WORKING_DIR"] || loop do
+			if File.directory?(File.join(full, ".git"))
+				puts "repo is #{full}"
+				return full
+			end
+			raise "No Repo Found" if full == full=File.dirname(full)
 		end
 	end
 
@@ -185,7 +247,7 @@ class Tlog::Storage::Disk
 	end
 
 	def filename_for_current
-		File.join(filename_for_working_dir, "current")
+		File.join("current")
 	end
 
 end

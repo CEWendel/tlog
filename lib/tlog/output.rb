@@ -1,4 +1,4 @@
-
+require 'colorize'
 class Tlog::Output
 
 	attr_accessor :stdout
@@ -16,6 +16,14 @@ class Tlog::Output
 	def line(out)
 		@stdout.puts out
 		true
+	end
+
+	def line_yellow(out)
+		@stdout.puts out.yellow
+	end
+
+	def line_red(out)
+		@stdout.puts out.red
 	end
 
 end
