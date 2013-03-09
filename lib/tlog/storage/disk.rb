@@ -55,7 +55,6 @@ class Tlog::Storage::Disk
 		in_branch(tlog_branch) do
 			File.open('.hold', 'w+'){|f| f.puts('hold')}
 			unless tlog_branch
-				puts "should be adding"
 				git.add
 				git.commit('creating the tlog branch')
 			end
@@ -72,14 +71,14 @@ class Tlog::Storage::Disk
 	end
 
 	def start_tlog(tlog_name, tlog_length)
-		in_branch do |wd|
-			if update_current(tlog_name, tlog_length)
-				puts "here"
+		puts "here"
+		if update_current(tlog_name, tlog_length)
+			in_branch do |wd|
 				start_task(tlog_name)
 				true
-			else
-				false
 			end
+		else
+			false
 		end
 	end
 
@@ -158,6 +157,7 @@ class Tlog::Storage::Disk
 
 	def update_current(task_name, tlog_length)
 		puts "update_current called, task name is #{task_name}"
+		puts "filename for current is #{filename_for_current}"
 		if !File.exists?(filename_for_current)
 			FileUtils.touch(filename_for_current)
 			write_task_to_current(task_name, tlog_length)
@@ -247,7 +247,7 @@ class Tlog::Storage::Disk
 	end
 
 	def filename_for_current
-		File.join("current")
+		File.expand_path(File.join("current"))
 	end
 
 end
