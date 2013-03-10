@@ -29,6 +29,8 @@ class Tlog::Storage::Disk
 		unless(bs.include?('tlog') && File.directory?(@tlog_working))
 			init_tlog_branch(bs.include?('tlog'))
 		end
+
+		@task_storage = Tlog::Storage::Task_Store.new
 	end
 
 	# Code from 'ticgit', temporarily switches to tlog branch 
@@ -71,24 +73,25 @@ class Tlog::Storage::Disk
 	end
 
 	def start_tlog(tlog_name, tlog_length)
-		puts "here"
-		if update_current(tlog_name, tlog_length)
-			in_branch do |wd|
+		in_branch do |wd|
+			if update_current(tlog_name, tlog_length)
 				start_task(tlog_name)
 				true
+			else
+				false
 			end
-		else
-			false
 		end
 	end
 
 	def stop_tlog(tlog_name)
 		tlog_name = current_task_name unless tlog_name
-		if stop_current
-			delete_current(tlog_name)
-			true
-		else
-			false
+		in_branch do |wd|
+			if stop_current
+				delete_current(tlog_name)
+				true
+			else
+				false
+			end
 		end
 	end
 
@@ -221,6 +224,7 @@ class Tlog::Storage::Disk
 	def stop_task(name, start_time, task_length)
 		@task_storage.initial_tlog_length = task_length if task_length
 		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil)
+		puts "here"
 		update_task_storage(task_path(name), new_entry)
 		@task_storage.create_entry
 	end
@@ -238,16 +242,12 @@ class Tlog::Storage::Disk
 		File.join(tasks_path, task_name)
 	end
 
-	def filename_for_working_dir
-		File.join(@working_dir, ".tlog")
-	end
-
 	def tasks_path
-		File.join(filename_for_working_dir, "tasks")
+		File.expand_path(File.join('tasks'))
 	end
 
 	def filename_for_current
-		File.expand_path(File.join("current"))
+		File.expand_path(File.join('current'))
 	end
 
 end

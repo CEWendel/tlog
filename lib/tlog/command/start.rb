@@ -41,6 +41,10 @@ class Tlog::Command::Start < Tlog::Command
 		parser.on("-l", "--length <tlog_length>") do |length|
       		options[:length] = length
     	end
+
+    	parser.on("-d", "--description <description>") do |description|
+    		options[:description] = description
+    	end
 	end
 
 	private
