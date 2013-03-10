@@ -12,14 +12,12 @@ class Tlog::Storage::Disk
 	attr_reader :tlog_working
 	attr_reader :tlog_index
 	attr_reader :working_dir
-	attr_reader :task_storage
+	attr_reader :log_storage
 
 	def initialize(git_dir)	
 		@git = Git.open(find_repo(git_dir))
 		proj_path = @git.dir.path.downcase.gsub(/[^a-z0-9]+/i, '-')
-		#def self.clean_string(string)
-      	#string.downcase.gsub(/[^a-z0-9]+/i, '-')
-    	#end
+
 		@tlog_dir = '~/.tlog'
 		@tlog_working = File.expand_path(File.join(@tlog_dir, proj_path, 'working'))
 		@tlog_index = File.expand_path(File.join(@tlog_dir, proj_path, 'index'))
@@ -30,7 +28,7 @@ class Tlog::Storage::Disk
 			init_tlog_branch(bs.include?('tlog'))
 		end
 
-		@task_storage = Tlog::Storage::Task_Store.new
+		@log_storage = Tlog::Storage::Task_Store.new
 	end
 
 	def init_project	
@@ -88,8 +86,8 @@ class Tlog::Storage::Disk
 
 	def tlog_entries(tlog_name)
 		if task_path(tlog_name)
-			@task_storage.task_path = task_path(tlog_name)
-			@task_storage.get_tlog_entries
+			log_storage.task_path = task_path(tlog_name)
+			log_storage.get_tlog_entries
 		else
 			nil
 		end
@@ -97,8 +95,8 @@ class Tlog::Storage::Disk
 
 	def tlog_length(tlog_name)
 		if task_path(tlog_name)
-			@task_storage.task_path = task_path(tlog_name)
-			@task_storage.get_tlog_length
+			log_storage.task_path = task_path(tlog_name)
+			log_storage.get_tlog_length
 		else
 			nil
 		end
@@ -232,19 +230,19 @@ class Tlog::Storage::Disk
 	end
 
 	def stop_task(name, start_time, task_length)
-		@task_storage.initial_tlog_length = task_length if task_length
+		log_storage.initial_tlog_length = task_length if task_length
 		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil)
-		update_task_storage(task_path(name), new_entry)
-		@task_storage.create_entry
+		updatelog_storage(task_path(name), new_entry)
+		log_storage.create_entry
 	end
 
 	def start_task(task_name)
 		FileUtils.mkdir_p(task_path(task_name)) unless Dir.exists?(task_path(task_name))
 	end
 
-	def update_task_storage(task_path, task_entry)
-		@task_storage.task_path = task_path
-		@task_storage.entry = task_entry
+	def updatelog_storage(task_path, task_entry)
+		log_storage.task_path = task_path
+		log_storage.entry = task_entry
 	end
 
 	def task_path(task_name)
