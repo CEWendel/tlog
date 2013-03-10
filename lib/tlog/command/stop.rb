@@ -25,13 +25,13 @@ class Tlog::Command::Stop < Tlog::Command
 	end
 
 	def options(parser, options)
-		parser.banner = "usage: tlog stop <task_name>"
+		parser.banner = "usage: tlog stop <log_name>"
 	end
 
 	private
 
-	def stop(task_name)
-		@storage.stop_tlog(task_name)
+	def stop(log_name)
+		@storage.stop_log(log_name)
 	end
 
 end

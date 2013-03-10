@@ -6,8 +6,8 @@ require 'time'
 class Tlog::Storage::Task_Store
 
 	attr_accessor :entry
-	attr_accessor :task_path
-	attr_accessor :initial_tlog_length
+	attr_accessor :log_path
+	attr_accessor :initial_log_length
 
 	def create_entry
 		puts "Create entry called"
@@ -93,8 +93,8 @@ class Tlog::Storage::Task_Store
 	def update_head(entry_length)
 		create_head unless File.exists?(head_path)
 		content = @entry.hash
-		if initial_tlog_length
-			tlog_length = initial_tlog_length.to_i
+		if initial_log_length
+			tlog_length = initial_log_length.to_i
 		else
 			tlog_length = get_tlog_length if get_tlog_length
 		end
@@ -107,7 +107,7 @@ class Tlog::Storage::Task_Store
 	end
 
 	def head_path
-		File.join(@task_path, "HEAD")
+		File.join(log_path, "HEAD")
 	end
 
 	def write_to_entry(path)
@@ -118,7 +118,7 @@ class Tlog::Storage::Task_Store
 	end
 
 	def task_entry_path
-		File.join(@task_path, @entry.hash)
+		File.join(log_path, @entry.hash)
 	end
 
 	def generate_random_hex

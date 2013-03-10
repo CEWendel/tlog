@@ -33,19 +33,19 @@ class Tlog::Storage::Disk
 
 	def init_project	
 		if !File.exists?(filename_for_working_dir)
-			FileUtils.mkdir_p(tasks_path)
+			FileUtils.mkdir_p(logs_path)
 			true
 		else
 			false
 		end
 	end
 
-	def start_tlog(tlog_name, tlog_length)
+	def start_log(log_name, log_length)
 		in_branch do |wd|
-			if update_current(tlog_name, tlog_length)
-				start_task(tlog_name)
+			if update_current(log_name, log_length)
+				create_log(log_name)
 				git.add
-				git.commit("Started log #{tlog_name}")
+				git.commit("Started log #{log_name}")
 				true
 			else
 				false
@@ -53,13 +53,13 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def stop_tlog(tlog_name)
+	def stop_log(log_name)
 		in_branch do |wd|
-			tlog_name = current_task_name unless tlog_name
+			log_name = current_log_name unless log_name
 			if stop_current
-				delete_current(tlog_name)
+				delete_current(log_name)
 				git.add
-				git.commit("Stopped log #{tlog_name}")
+				git.commit("Stopped log #{log_name}")
 				true
 			else
 				false
@@ -67,15 +67,15 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def delete_tlog(tlog_name)
+	def delete_log(log_name)
 		in_branch do |wd|
-			if Dir.exists?(task_path(tlog_name))
-				all_task_dirs.each do |tlog_path|
-					tlog_basename = tlog_path.basename.to_s
-					if tlog_basename == tlog_name
-						FileUtils.rm_rf(tlog_path) if tlog_basename == tlog_name
-						git.remove(tlog_path)
-						git.commit("Deleted log #{tlog_name}")
+			if Dir.exists?(log_path(log_name))
+				all_log_dirs.each do |log_path|
+					log_basename = log_path.basename.to_s
+					if log_basename == log_name
+						FileUtils.rm_rf(log_path) if log_basename == log_name
+						git.remove(log_path)
+						git.commit("Deleted log #{log_name}")
 					end
 				end
 			else
@@ -84,18 +84,18 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def tlog_entries(tlog_name)
-		if task_path(tlog_name)
-			log_storage.task_path = task_path(tlog_name)
+	def log_entries(log_name)
+		if log_path(log_name)
+			log_storage.log_path = log_path(log_name)
 			log_storage.get_tlog_entries
 		else
 			nil
 		end
 	end
 
-	def tlog_length(tlog_name)
-		if task_path(tlog_name)
-			log_storage.task_path = task_path(tlog_name)
+	def log_length(log_name)
+		if log_path(log_name)
+			log_storage.log_path = log_path(log_name)
 			log_storage.get_tlog_length
 		else
 			nil
@@ -123,12 +123,12 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def current_task_name
+	def current_log_name
 		File.open(current_path).first.strip if File.exists?(current_path)
 	end
 
-	def all_task_dirs
-		Pathname.new(tasks_path).children.select { |c| c.directory? }
+	def all_log_dirs
+		Pathname.new(logs_path).children.select { |c| c.directory? }
 	end
 
 	private
@@ -163,22 +163,22 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def update_current(task_name, tlog_length)
-		puts "update_current called, task name is #{task_name}"
+	def update_current(log_name, log_length)
+		puts "update_current called, log name is #{log_name}"
 		puts "filename for current is #{current_path}"
 		if !File.exists?(current_path)
 			FileUtils.touch(current_path)
-			write_task_to_current(task_name, tlog_length)
+			write_log_to_current(log_name, log_length)
 			true
 		else
 			false
 		end
 	end
 
-	def delete_current(task_name) # Change this method name or add one
-		puts "delete_current called, task name is #{task_name}"
+	def delete_current(log_name) # Change this method name or add one
+		puts "delete_current called, log name is #{log_name}"
 		if File.exists?(current_path)
-			if current_task_name == task_name
+			if current_log_name == log_name
 				FileUtils.rm(current_path)
 				git.remove(current_path)
 			end
@@ -187,9 +187,9 @@ class Tlog::Storage::Disk
 		end
 	end	
 
-	def write_task_to_current(task_name, task_length)
-		content = task_name + "\n" + Time.new.to_s
-		content << "\n" + task_length.to_s if task_length
+	def write_log_to_current(log_name, log_length)
+		content = log_name + "\n" + Time.new.to_s
+		content << "\n" + log_length.to_s if log_length
 		File.open(current_path, 'w') { |f| f.write(content)}
 	end
 
@@ -199,7 +199,7 @@ class Tlog::Storage::Disk
 
 	def stop_current
 		if File.exists?(current_path)
-			stop_task(current_task_name, current_start_time, current_log_length)
+			create_log_entry(current_log_name, current_start_time, current_log_length)
 			true
 		else
 			false
@@ -208,7 +208,7 @@ class Tlog::Storage::Disk
 
 	def current_start_time
 		contents = File.read(current_path)
-		contents.slice! current_task_name
+		contents.slice! current_log_name
 		start_time = contents
 		split_contents = contents.split(' ', 4)
 		if split_contents.length == 4
@@ -220,36 +220,36 @@ class Tlog::Storage::Disk
 
 	def current_log_length
 		contents = File.read(current_path)
-		contents.slice! current_task_name
+		contents.slice! current_log_name
 		split_contents = contents.split(' ', 4)
 		if split_contents.length == 4
-			task_length = split_contents[3]
+			log_length = split_contents[3]
 		else
 			nil
 		end
 	end
 
-	def stop_task(name, start_time, task_length)
-		log_storage.initial_tlog_length = task_length if task_length
+	def create_log_entry(name, start_time, log_length)
+		log_storage.initial_log_length = log_length if log_length
 		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil)
-		updatelog_storage(task_path(name), new_entry)
+		update_log_storage(log_path(name), new_entry)
 		log_storage.create_entry
 	end
 
-	def start_task(task_name)
-		FileUtils.mkdir_p(task_path(task_name)) unless Dir.exists?(task_path(task_name))
+	def create_log(log_name)
+		FileUtils.mkdir_p(log_path(log_name)) unless Dir.exists?(log_path(log_name))
 	end
 
-	def updatelog_storage(task_path, task_entry)
-		log_storage.task_path = task_path
-		log_storage.entry = task_entry
+	def update_log_storage(log_path, log_entry)
+		log_storage.log_path = log_path
+		log_storage.entry = log_entry
 	end
 
-	def task_path(task_name)
-		File.join(tasks_path, task_name)
+	def log_path(log_name)
+		File.join(logs_path, log_name)
 	end
 
-	def tasks_path
+	def logs_path
 		File.expand_path(File.join('tasks'))
 	end
 
