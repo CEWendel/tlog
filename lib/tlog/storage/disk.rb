@@ -76,10 +76,13 @@ class Tlog::Storage::Disk
 		in_branch do |wd|
 			if update_current(tlog_name, tlog_length)
 				start_task(tlog_name)
+				git.add
+				git.commit("Started log #{tlog_name}")
 				true
 			else
 				false
 			end
+
 		end
 	end
 
@@ -88,6 +91,8 @@ class Tlog::Storage::Disk
 		in_branch do |wd|
 			if stop_current
 				delete_current(tlog_name)
+				git.add
+				git.commit("Stopped log #{tlog_name}")
 				true
 			else
 				false
