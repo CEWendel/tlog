@@ -74,7 +74,11 @@ class Tlog::Storage::Disk
 			if Dir.exists?(task_path(tlog_name))
 				all_task_dirs.each do |tlog_path|
 					tlog_basename = tlog_path.basename.to_s
-					FileUtils.rm_rf(tlog_path) if tlog_basename == tlog_name
+					if tlog_basename == tlog_name
+						FileUtils.rm_rf(tlog_path) if tlog_basename == tlog_name
+						git.remove(tlog_path)
+						git.commit("Deleted log #{tlog_name}")
+					end
 				end
 			else
 				false
@@ -109,11 +113,11 @@ class Tlog::Storage::Disk
 	end
 
 	def start_time_string
-		current_start_time if File.exists?(filename_for_current)
+		current_start_time if File.exists?(current_path)
 	end
 
 	def time_since_start
-		if File.exists?(filename_for_current)
+		if File.exists?(current_path)
 			difference = Time.now - Time.parse(current_start_time)
 			difference.to_i
 		else
@@ -122,7 +126,7 @@ class Tlog::Storage::Disk
 	end
 
 	def current_task_name
-		File.open(filename_for_current).first.strip if File.exists?(filename_for_current)
+		File.open(current_path).first.strip if File.exists?(current_path)
 	end
 
 	def all_task_dirs
@@ -163,9 +167,9 @@ class Tlog::Storage::Disk
 
 	def update_current(task_name, tlog_length)
 		puts "update_current called, task name is #{task_name}"
-		puts "filename for current is #{filename_for_current}"
-		if !File.exists?(filename_for_current)
-			FileUtils.touch(filename_for_current)
+		puts "filename for current is #{current_path}"
+		if !File.exists?(current_path)
+			FileUtils.touch(current_path)
 			write_task_to_current(task_name, tlog_length)
 			true
 		else
@@ -175,8 +179,11 @@ class Tlog::Storage::Disk
 
 	def delete_current(task_name) # Change this method name or add one
 		puts "delete_current called, task name is #{task_name}"
-		if File.exists?(filename_for_current)
-			FileUtils.rm(filename_for_current) if current_task_name == task_name
+		if File.exists?(current_path)
+			if current_task_name == task_name
+				FileUtils.rm(current_path)
+				git.remove(current_path)
+			end
 		else
 			false
 		end
@@ -185,15 +192,15 @@ class Tlog::Storage::Disk
 	def write_task_to_current(task_name, task_length)
 		content = task_name + "\n" + Time.new.to_s
 		content << "\n" + task_length.to_s if task_length
-		File.open(filename_for_current, 'w') { |f| f.write(content)}
+		File.open(current_path, 'w') { |f| f.write(content)}
 	end
 
 	def current_exists?
-		Dir.exists?(filename_for_current)
+		Dir.exists?(current_path)
 	end
 
 	def stop_current
-		if File.exists?(filename_for_current)
+		if File.exists?(current_path)
 			stop_task(current_task_name, current_start_time, current_log_length)
 			true
 		else
@@ -202,7 +209,7 @@ class Tlog::Storage::Disk
 	end
 
 	def current_start_time
-		contents = File.read(filename_for_current)
+		contents = File.read(current_path)
 		contents.slice! current_task_name
 		start_time = contents
 		split_contents = contents.split(' ', 4)
@@ -214,7 +221,7 @@ class Tlog::Storage::Disk
 	end
 
 	def current_log_length
-		contents = File.read(filename_for_current)
+		contents = File.read(current_path)
 		contents.slice! current_task_name
 		split_contents = contents.split(' ', 4)
 		if split_contents.length == 4
@@ -227,7 +234,6 @@ class Tlog::Storage::Disk
 	def stop_task(name, start_time, task_length)
 		@task_storage.initial_tlog_length = task_length if task_length
 		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil)
-		puts "here"
 		update_task_storage(task_path(name), new_entry)
 		@task_storage.create_entry
 	end
@@ -249,7 +255,7 @@ class Tlog::Storage::Disk
 		File.expand_path(File.join('tasks'))
 	end
 
-	def filename_for_current
+	def current_path
 		File.expand_path(File.join('current'))
 	end
 
