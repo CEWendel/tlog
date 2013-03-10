@@ -33,36 +33,6 @@ class Tlog::Storage::Disk
 		@task_storage = Tlog::Storage::Task_Store.new
 	end
 
-	# Code from 'ticgit', temporarily switches to tlog branch 
-	def in_branch(branch_exists = true)
-		unless File.directory?(@tlog_working)
-			FileUtils.mkdir_p(@tlog_working)
-		end
-
-		old_current = git.lib.branch_current
-		begin
-			git.lib.change_head_branch('tlog')
-			git.with_index(@tlog_index) do 
-				git.with_working(@tlog_working) do |wd|
-					git.lib.checkout('tlog') if branch_exists
-					yield wd
-				end
-			end
-		ensure
-			git.lib.change_head_branch(old_current)
-		end
-	end
-
-	def init_tlog_branch(tlog_branch = false)
-		in_branch(tlog_branch) do
-			File.open('.hold', 'w+'){|f| f.puts('hold')}
-			unless tlog_branch
-				git.add
-				git.commit('creating the tlog branch')
-			end
-		end
-	end
-
 	def init_project	
 		if !File.exists?(filename_for_working_dir)
 			FileUtils.mkdir_p(tasks_path)
@@ -100,13 +70,15 @@ class Tlog::Storage::Disk
 	end
 
 	def delete_tlog(tlog_name)
-		if Dir.exists?(task_path(tlog_name))
-			all_task_dirs.each do |tlog_path|
-				tlog_basename = tlog_path.basename.to_s
-				FileUtils.rm_rf(tlog_path) if tlog_basename == tlog_name
+		in_branch do |wd|
+			if Dir.exists?(task_path(tlog_name))
+				all_task_dirs.each do |tlog_path|
+					tlog_basename = tlog_path.basename.to_s
+					FileUtils.rm_rf(tlog_path) if tlog_basename == tlog_name
+				end
+			else
+				false
 			end
-		else
-			false
 		end
 	end
 
@@ -158,6 +130,36 @@ class Tlog::Storage::Disk
 	end
 
 	private
+
+	# Code from 'ticgit', temporarily switches to tlog branch 
+	def in_branch(branch_exists = true)
+		unless File.directory?(@tlog_working)
+			FileUtils.mkdir_p(@tlog_working)
+		end
+
+		old_current = git.lib.branch_current
+		begin
+			git.lib.change_head_branch('tlog')
+			git.with_index(@tlog_index) do 
+				git.with_working(@tlog_working) do |wd|
+					git.lib.checkout('tlog') if branch_exists
+					yield wd
+				end
+			end
+		ensure
+			git.lib.change_head_branch(old_current)
+		end
+	end
+
+	def init_tlog_branch(tlog_branch = false)
+		in_branch(tlog_branch) do
+			File.open('.hold', 'w+'){|f| f.puts('hold')}
+			unless tlog_branch
+				git.add
+				git.commit('creating the tlog branch')
+			end
+		end
+	end
 
 	def update_current(task_name, tlog_length)
 		puts "update_current called, task name is #{task_name}"
