@@ -86,8 +86,8 @@ class Tlog::Storage::Disk
 	end
 
 	def stop_tlog(tlog_name)
-		tlog_name = current_task_name unless tlog_name
 		in_branch do |wd|
+			tlog_name = current_task_name unless tlog_name
 			if stop_current
 				delete_current(tlog_name)
 				git.add
@@ -131,10 +131,7 @@ class Tlog::Storage::Disk
 	def find_repo(dir)
 		full = File.expand_path(dir)
 		ENV["GIT_WORKING_DIR"] || loop do
-			if File.directory?(File.join(full, ".git"))
-				puts "repo is #{full}"
-				return full
-			end
+			return full if File.directory?(File.join(full, ".git"))
 			raise "No Repo Found" if full == full=File.dirname(full)
 		end
 	end
