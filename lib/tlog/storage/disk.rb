@@ -82,7 +82,6 @@ class Tlog::Storage::Disk
 			else
 				false
 			end
-
 		end
 	end
 

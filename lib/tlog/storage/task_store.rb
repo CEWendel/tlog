@@ -98,7 +98,7 @@ class Tlog::Storage::Task_Store
 		else
 			tlog_length = get_tlog_length if get_tlog_length
 		end
-		content += "\n" + lengths_differnce(entry_length, tlog_length)
+		content += "\n" + lengths_differnce(entry_length, tlog_length) if tlog_length
 		File.open(head_path, 'w') { |f| f.write(content) }
 	end
 
