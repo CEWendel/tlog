@@ -31,7 +31,9 @@ class Tlog::Command::Stop < Tlog::Command
 	private
 
 	def stop(log_name)
-		@storage.stop_log(log_name)
+		storage.in_branch do |wd|
+			storage.stop_log(log_name)
+		end
 	end
 
 end

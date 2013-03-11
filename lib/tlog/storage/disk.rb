@@ -41,46 +41,43 @@ class Tlog::Storage::Disk
 	end
 
 	def start_log(log_name, log_length)
-		in_branch do |wd|
-			if update_current(log_name, log_length)
-				create_log(log_name)
-				git.add
-				git.commit("Started log #{log_name}")
-				true
-			else
-				false
-			end
+		if update_current(log_name, log_length)
+			create_log(log_name)
+			git.add
+			git.commit("Started log #{log_name}")
+			true
+		else
+			false
 		end
 	end
 
 	def stop_log(log_name)
-		in_branch do |wd|
-			log_name = current_log_name unless log_name
-			if stop_current
-				delete_current(log_name)
-				git.add
-				git.commit("Stopped log #{log_name}")
-				true
-			else
-				false
-			end
+		log_name = current_log_name unless log_name
+		if stop_current
+			delete_current(log_name)
+			git.add
+			git.commit("Stopped log #{log_name}")
+			true
+		else
+			false
 		end
 	end
 
 	def delete_log(log_name)
-		in_branch do |wd|
-			if Dir.exists?(log_path(log_name))
-				all_log_dirs.each do |log_path|
-					log_basename = log_path.basename.to_s
+		if Dir.exists?(log_path(log_name))
+			all_log_dirs.each do |log_path|
+				log_basename = log_path.basename.to_s
+				if log_basename == log_name
 					if log_basename == log_name
-						FileUtils.rm_rf(log_path) if log_basename == log_name
-						git.remove(log_path)
-						git.commit("Deleted log #{log_name}")
+						FileUtils.rm_rf(log_path) 
 					end
+					git.remove(log_path, {:recursive => "-r"})
+					git.commit("Deleted log #{log_name}")
+				else
 				end
-			else
-				false
 			end
+		else
+			false
 		end
 	end
 
@@ -131,8 +128,6 @@ class Tlog::Storage::Disk
 		Pathname.new(logs_path).children.select { |c| c.directory? }
 	end
 
-	private
-
 	# Code from 'ticgit', temporarily switches to tlog branch 
 	def in_branch(branch_exists = true)
 		unless File.directory?(@tlog_working)
@@ -152,6 +147,8 @@ class Tlog::Storage::Disk
 			git.lib.change_head_branch(old_current)
 		end
 	end
+
+	private
 
 	def init_tlog_branch(tlog_branch = false)
 		in_branch(tlog_branch) do

@@ -50,8 +50,10 @@ class Tlog::Command::Start < Tlog::Command
 	private
 
 	def create_entry(log_name, log_length)
-		log_length = ChronicDuration.parse(log_length) if log_length
-		raise Tlog::Error::CommandInvalid, "Must specify log name" unless log_name
-		@storage.start_log(log_name, log_length)
+		storage.in_branch do |wd|
+			log_length = ChronicDuration.parse(log_length) if log_length
+			raise Tlog::Error::CommandInvalid, "Must specify log name" unless log_name
+			@storage.start_log(log_name, log_length)
+		end
 	end
 end

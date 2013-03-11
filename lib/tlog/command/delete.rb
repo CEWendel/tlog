@@ -17,7 +17,9 @@ class Tlog::Command::Delete < Tlog::Command
 	private
 
 	def delete(tlog_name)
-		@storage.delete_tlog(tlog_name)
+		storage.in_branch do |wd|
+			storage.delete_log(tlog_name)
+		end
 	end
 
 end
