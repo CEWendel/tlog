@@ -33,18 +33,18 @@ class Tlog::Command::Active < Tlog::Command
 
 	def print_time_entry(output)
 		# should this be done in disk?
-		active_tasks = @storage.all_task_dirs
-		task_active = false
+		all_logs = @storage.all_log_dirs
+		log_active = false
 		out_string = ""
-		active_tasks.each do |task|
-			task_name = task.basename.to_s
-			if @storage.current_task_name == task_name
-				task_name << "(active)" 
-				task_active = true
+		all_logs.each do |log|
+			log_name = log.basename.to_s
+			if storage.current_log_name == log_name
+				log_name << "(active)" 
+				log_active = true
 			end
-			out_string << task_name + "\n"
+			out_string << log_name + "\n"
 		end
-		out_string.prepend("No time logs active. Existing time logs:" + "\n") unless task_active
+		out_string.prepend("No time logs active. Existing time logs:" + "\n") unless log_active
 		output.line(out_string)
 	end
 
