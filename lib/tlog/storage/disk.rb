@@ -65,15 +65,13 @@ class Tlog::Storage::Disk
 
 	def delete_log(log_name)
 		if Dir.exists?(log_path(log_name))
+			stop_log(log_name)
 			all_log_dirs.each do |log_path|
 				log_basename = log_path.basename.to_s
 				if log_basename == log_name
-					if log_basename == log_name
-						FileUtils.rm_rf(log_path) 
-					end
+					FileUtils.rm_rf(log_path) if log_basename == log_name 
 					git.remove(log_path, {:recursive => "-r"})
 					git.commit("Deleted log #{log_name}")
-				else
 				end
 			end
 		else
