@@ -16,7 +16,7 @@ class Tlog::Storage::Task_Store
 		@entry.hash = generate_random_hex
 		FileUtils.touch(task_entry_path)
 		write_to_entry(task_entry_path)
-		update_head(@entry.length)
+		update_head(entry.length)
 	end
 
 	def get_tlog_entries
@@ -52,7 +52,7 @@ class Tlog::Storage::Task_Store
 	end
 
 	def head_hash_value
-		File.open(head_path).first.strip
+		File.open(head_path).first.strip if File.exists?(head_path)
 	end
 
 	def entry_hash_value
@@ -118,7 +118,7 @@ class Tlog::Storage::Task_Store
 	end
 
 	def task_entry_path
-		File.join(log_path, @entry.hash)
+		File.join(log_path, entry.hash)
 	end
 
 	def generate_random_hex
