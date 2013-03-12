@@ -145,7 +145,7 @@ class Tlog::Storage::Disk
 
 	def init_tlog_branch(tlog_branch = false)
 		in_branch(tlog_branch) do
-			File.open('.hold', 'w+'){|f| f.puts('hold')}
+			#File.open('.hold', 'w+'){|f| f.puts('hold')}
 			unless tlog_branch
 				git.add
 				git.commit('creating the tlog branch')
