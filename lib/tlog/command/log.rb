@@ -40,7 +40,9 @@ class Tlog::Command::Log < Tlog::Command
 		end
 		return if length_exceeds_threshold?(log_length, length_threshold)
 		print_log_name(log_name, output)
-		print_time_left(log_name, log_length, start_time, output)
+		print_time_left(log_length, output)
+		print_header(output)
+		print_out_current(log_name, log_length, start_time, output)
 		display_entries(entries, output)
 	end
 
@@ -54,26 +56,39 @@ class Tlog::Command::Log < Tlog::Command
 	def display_entries(entries, output)
 		if entries.size > 0
 			entries.each do |entry|
-				out_str = ""
-				out_str += "#{date_time_format.timestamp entry.start_time}"
-				out_str += " -> #{date_time_format.timestamp entry.end_time}"
-				out_str += " Length: #{seconds_format.duration entry.length.to_s}"
+				out_str = "\t%-4s   %16s  %11s         %9s" % [
+					date_time_format.timestamp(entry.start_time),
+					date_time_format.timestamp(entry.end_time),
+					seconds_format.duration(entry.length.to_s),
+					"(no description)", 
+				]
 				output.line(out_str)
 			end
 		end
 	end
 
+	def print_header(output)
+		output.line("\tStart               End                    Duration        Description")
+	end 
+
 	def print_log_name(log_name, output)
 		output.line_yellow("Log: #{log_name}")
 	end
 
-	def print_time_left(log_name, log_length, current_start_time, output)
+	def print_time_left(log_length, output)
+		output.line_red("Time left: #{seconds_format.duration log_length}") if log_length
+	end
+
+	def print_out_current(log_name, log_length, current_start_time, output)
 		if is_current_log_name?(log_name)
-			output.line_red("Time left: #{seconds_format.duration update_log_length(log_length)}") if log_length
 			formatted_length = seconds_format.duration storage.time_since_start
-			output.line("#{date_time_format.timestamp current_start_time} -> \t\t       Length: #{formatted_length}")
-		else
-			output.line_red("Time left: #{seconds_format.duration log_length}") if log_length
+			out_str = out_str = "\t%-4s   %16s   %11s         %9s" % [
+				date_time_format.timestamp(current_start_time),
+				nil,
+				formatted_length,
+				"(no description)", 
+			]
+			output.line(out_str)
 		end
 	end
 
