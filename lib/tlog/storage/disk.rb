@@ -31,18 +31,9 @@ class Tlog::Storage::Disk
 		@log_storage = Tlog::Storage::Task_Store.new
 	end
 
-	def init_project	
-		if !File.exists?(filename_for_working_dir)
-			FileUtils.mkdir_p(logs_path)
-			true
-		else
-			false
-		end
-	end
-
 	def start_log(log_name, log_length)
 		if update_current(log_name, log_length)
-			create_log(log_name)
+			create_log(log_name) # Creates directory if it has not already been created
 			git.add
 			git.commit("Started log #{log_name}")
 			true
@@ -120,6 +111,10 @@ class Tlog::Storage::Disk
 
 	def current_log_name
 		File.open(current_path).first.strip if File.exists?(current_path)
+	end
+
+	def get_current_start_time 
+		current_start_time
 	end
 
 	def all_log_dirs

@@ -52,12 +52,14 @@ class Tlog::Command::Log < Tlog::Command
 	end
 
 	def display_entries(entries, output)
-		entries.each do |entry|
-			out_str = ""
-			out_str += "#{date_time_format.timestamp entry.start_time}"
-			out_str += " -> #{date_time_format.timestamp entry.end_time}"
-			out_str += " Length: #{seconds_format.duration entry.length.to_s}"
-			output.line(out_str)
+		if entries.size > 0
+			entries.each do |entry|
+				out_str = ""
+				out_str += "#{date_time_format.timestamp entry.start_time}"
+				out_str += " -> #{date_time_format.timestamp entry.end_time}"
+				out_str += " Length: #{seconds_format.duration entry.length.to_s}"
+				output.line(out_str)
+			end
 		end
 	end
 
@@ -67,7 +69,7 @@ class Tlog::Command::Log < Tlog::Command
 
 	def print_time_left(log_name, log_length, current_start_time, output)
 		if is_current_log_name?(log_name)
-			output.line_red("Time left: #{seconds_format.duration update_log_length(log_length)}")
+			output.line_red("Time left: #{seconds_format.duration update_log_length(log_length)}") if log_length
 			formatted_length = seconds_format.duration storage.time_since_start
 			output.line("#{date_time_format.timestamp current_start_time} -> \t\t       Length: #{formatted_length}")
 		else
@@ -86,7 +88,7 @@ class Tlog::Command::Log < Tlog::Command
 	end
 
 	def update_log_length(log_length)
-		log_length - storage.time_since_start
+		log_length - storage.time_since_start if log_length
 	end
 
 	def is_current_log_name?(log_name)

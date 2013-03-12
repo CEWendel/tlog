@@ -10,9 +10,6 @@ class Tlog::Storage::Task_Store
 	attr_accessor :initial_log_length
 
 	def create_entry
-		puts "Create entry called"
-		puts "Entry length is #{@entry.length}"
-		puts "Difference is #{@entry.end_time - @entry.start_time}"
 		@entry.hash = generate_random_hex
 		FileUtils.touch(task_entry_path)
 		write_to_entry(task_entry_path)
@@ -21,6 +18,7 @@ class Tlog::Storage::Task_Store
 
 	def get_tlog_entries
 		commands = Array.new
+		return commands unless head_hash_value
 		hash_value = head_hash_value
 		begin 
 			@entry = Tlog::Task_Entry.new(nil, nil, hash_value)
@@ -32,13 +30,17 @@ class Tlog::Storage::Task_Store
 	end
 
 	def get_tlog_length
-		content = File.read(head_path)
-		split_contents = content.split(' ', 2)
-		if split_contents.length == 2
-			split_contents[1].to_i
+		if File.exists?(head_path)
+			content = File.read(head_path)
+			split_contents = content.split(' ', 2)
+			if split_contents.length == 2
+				split_contents[1].to_i
+			else
+				nil
+			end
 		else
 			nil
-		end
+		end 
 	end
 
 	private
