@@ -187,6 +187,7 @@ class Tlog::Storage::Disk
 	end	
 
 	def write_to_current(log_name, entry_description, log_length)
+		puts "entry_description is #{entry_description}"
 		content = log_name + "\n" + Time.new.to_s + "\n" + entry_description
 		content << "\n" + log_length.to_s if log_length
 		File.open(current_path, 'w') { |f| f.write(content)}
@@ -221,7 +222,7 @@ class Tlog::Storage::Disk
 	def current_entry_description
 		contents = File.read(current_path)
 		contents.slice! current_log_name
-		contents.split(' ', 5)[0]
+		contents.split(' ', 5)[3]
 	end
 
 	def current_log_length
