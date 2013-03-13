@@ -35,12 +35,14 @@ class Tlog::Command::Log < Tlog::Command
 	def display_log(log_name, length_threshold, output)
 		entries = storage.log_entries(log_name)
 		log_length = storage.log_length(log_name)
+		puts "log_length is #{log_length}"
+		puts "time since start is #{storage.time_since_start}"
 		if storage.start_time_string && is_current_log_name?(log_name)
 			start_time = Time.parse(storage.start_time_string)
 		end
 		return if length_exceeds_threshold?(log_length, length_threshold)
 		print_log_name(log_name, output)
-		print_time_left(log_length, output)
+		print_time_left(log_name, log_length, output)
 		print_header(output)
 		print_out_current(log_name, log_length, start_time, output)
 		display_entries(entries, output)
@@ -75,8 +77,17 @@ class Tlog::Command::Log < Tlog::Command
 		output.line_yellow("Log: #{log_name}")
 	end
 
-	def print_time_left(log_length, output)
-		output.line_red("Time left: #{seconds_format.duration log_length}") if log_length
+	def print_time_left(log_name, log_length, output)
+		if (storage.current_log_name == log_name) && storage.cur_log_length
+			puts "cur_log_length is #{storage.cur_log_length}"
+			log_length = storage.cur_log_length
+			puts "log_length is #{log_length}"
+		end
+		log_length = update_log_length(log_length) if storage.time_since_start
+		if log_length
+			log_length = 0 if log_length < 0
+			output.line_red("Time left: #{seconds_format.duration log_length}") if log_length
+		end
 	end
 
 	def print_out_current(log_name, log_length, current_start_time, output)
@@ -95,8 +106,11 @@ class Tlog::Command::Log < Tlog::Command
 	def length_exceeds_threshold?(log_length, length_threshold)
 		if length_threshold and log_length
 			length_threshold = ChronicDuration.parse(length_threshold)
-			return true if log_length - length_threshold > 0
-			false
+			if log_length - length_threshold > 0
+				true
+			else
+				false
+			end
 		else
 			false
 		end

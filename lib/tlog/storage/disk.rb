@@ -31,8 +31,9 @@ class Tlog::Storage::Disk
 		@log_storage = Tlog::Storage::Task_Store.new
 	end
 
-	def start_log(log_name, log_length)
-		if update_current(log_name, log_length)
+	def start_log(log_name, entry_description, log_length)
+		entry_description = '(no description)' unless entry_description
+		if update_current(log_name, entry_description, log_length)
 			create_log(log_name) # Creates directory if it has not already been created
 			git.add
 			git.commit("Started log #{log_name}")
@@ -109,6 +110,14 @@ class Tlog::Storage::Disk
 		end
 	end
 
+	def cur_log_length
+		if current_log_length
+			current_log_length.to_i
+		else
+			nil
+		end
+	end
+
 	def current_log_name
 		File.open(current_path).first.strip if File.exists?(current_path)
 	end
@@ -153,12 +162,12 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def update_current(log_name, log_length)
+	def update_current(log_name, entry_description, log_length)
 		puts "update_current called, log name is #{log_name}"
 		puts "filename for current is #{current_path}"
 		if !File.exists?(current_path)
 			FileUtils.touch(current_path)
-			write_log_to_current(log_name, log_length)
+			write_to_current(log_name, entry_description, log_length)
 			true
 		else
 			false
@@ -177,8 +186,8 @@ class Tlog::Storage::Disk
 		end
 	end	
 
-	def write_log_to_current(log_name, log_length)
-		content = log_name + "\n" + Time.new.to_s
+	def write_to_current(log_name, entry_description, log_length)
+		content = log_name + "\n" + Time.new.to_s + "\n" + entry_description
 		content << "\n" + log_length.to_s if log_length
 		File.open(current_path, 'w') { |f| f.write(content)}
 	end
@@ -189,6 +198,7 @@ class Tlog::Storage::Disk
 
 	def stop_current
 		if File.exists?(current_path)
+			puts "current_entry_description is #{current_entry_description}"
 			create_log_entry(current_log_name, current_start_time, current_log_length)
 			true
 		else
@@ -200,20 +210,26 @@ class Tlog::Storage::Disk
 		contents = File.read(current_path)
 		contents.slice! current_log_name
 		start_time = contents
-		split_contents = contents.split(' ', 4)
-		if split_contents.length == 4
-			contents.slice! split_contents[3]
+		split_contents = contents.split(' ', 5)
+		if split_contents.length == 5
+			contents.slice! split_contents[4]
 			start_time = contents
 		end
-		start_time
+		start_time.strip
+	end
+
+	def current_entry_description
+		contents = File.read(current_path)
+		contents.slice! current_log_name
+		contents.split(' ', 5)[0]
 	end
 
 	def current_log_length
 		contents = File.read(current_path)
 		contents.slice! current_log_name
-		split_contents = contents.split(' ', 4)
-		if split_contents.length == 4
-			log_length = split_contents[3]
+		split_contents = contents.split(' ', 5)
+		if split_contents.length == 5
+			log_length = split_contents[4]
 		else
 			nil
 		end

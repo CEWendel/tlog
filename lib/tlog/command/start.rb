@@ -18,7 +18,11 @@ class Tlog::Command::Start < Tlog::Command
     #  :set_postal_address
     #end
   	#end
-		raise Tlog::Error::CommandInvalid, "Log already in progress" unless create_entry(input.args[0], input.options[:length])
+		raise Tlog::Error::CommandInvalid, "Log already in progress" unless create_entry(
+			input.args[0], 
+			input.options[:description],
+			input.options[:length],
+		)
 		#if input.args[0].nil?
 			# no task name given
 			#@storage.create_current
@@ -49,12 +53,12 @@ class Tlog::Command::Start < Tlog::Command
 
 	private
 
-	def create_entry(log_name, log_length)
+	def create_entry(log_name, entry_description, log_length)
 		storage.in_branch do |wd|
 			log_length = ChronicDuration.parse(log_length) if log_length
 			puts "log_length is #{log_length}"
 			raise Tlog::Error::CommandInvalid, "Must specify log name" unless log_name
-			@storage.start_log(log_name, log_length)
+			storage.start_log(log_name, entry_description, log_length)
 		end
 	end
 end
