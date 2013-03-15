@@ -33,6 +33,7 @@ class Tlog::Storage::Disk
 	end
 
 	def start_log(log_name, entry_description, log_length)
+		puts "entry_description is #{entry_description}"
 		entry_description = '(no description)' unless entry_description
 		if update_current(log_name, entry_description, log_length)
 			create_log(log_name) # Creates directory if it has not already been created

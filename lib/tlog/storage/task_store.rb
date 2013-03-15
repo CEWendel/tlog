@@ -45,14 +45,6 @@ class Tlog::Storage::Task_Store
 
 	private
 
-	def previous_entry
-		if File.exists?(head_path)
-			previous_hash = File.read(head_path)
-		else
-			nil
-		end
-	end
-
 	def head_hash_value
 		File.open(head_path).first.strip if File.exists?(head_path)
 	end
@@ -116,7 +108,7 @@ class Tlog::Storage::Task_Store
 	end
 
 	def write_to_entry(path)
-		previous_entry ? content = previous_entry : content = "none"
+		head_hash_value ? content = head_hash_value : content = "none"
 		time_log = entry.start_time.to_s + " " + entry.end_time.to_s
 		content += "\n" + time_log
 		content += "\n" + entry.description
