@@ -58,7 +58,7 @@ class Tlog::Storage::Task_Store
 			start_time = ""
 			end_time = ""
 			contents = File.read(task_entry_path)
-			split_contents = contents.split(' ',7)
+			split_contents = contents.split(' ',8)
 			contents.slice! split_contents[0]
 			for i in 1..6
 				if i < 4
@@ -69,7 +69,7 @@ class Tlog::Storage::Task_Store
 					contents.slice! split_contents[i]
 				end
 			end
-			entry.description = contents
+			entry.description = contents.strip
 			entry.start_time = Time.parse(start_time)
 			entry.end_time = Time.parse(end_time)
 			entry.reset_length
@@ -110,8 +110,10 @@ class Tlog::Storage::Task_Store
 	def write_to_entry(path)
 		head_hash_value ? content = head_hash_value : content = "none"
 		time_log = entry.start_time.to_s + " " + entry.end_time.to_s
-		content += "\n" + time_log
+		content += "\n" + time_log.strip
 		content += "\n" + entry.description
+		puts "entry descriptions is #{entry.description}"
+		puts "content is #{content}"
 		File.open(path, 'w'){ |f| f.write(content) }
 	end
 

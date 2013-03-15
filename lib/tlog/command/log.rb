@@ -62,7 +62,7 @@ class Tlog::Command::Log < Tlog::Command
 					date_time_format.timestamp(entry.start_time),
 					date_time_format.timestamp(entry.end_time),
 					seconds_format.duration(entry.length.to_s),
-					"(no description)", 
+					entry.description,
 				]
 				output.line(out_str)
 			end
