@@ -5,11 +5,13 @@ class Tlog::Task_Entry
 	attr_accessor :end_time
 	attr_accessor :length
 	attr_accessor :hash
+	attr_accessor :description
 
-	def initialize(start_time, end_time, hash)
+	def initialize(start_time, end_time, hash, description)
 		@start_time = start_time
 		@end_time = end_time
 		@hash = hash 
+		@description = description
 		reset_length
 	end
 

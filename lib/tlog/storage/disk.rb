@@ -201,7 +201,7 @@ class Tlog::Storage::Disk
 	def stop_current
 		if File.exists?(current_path)
 			puts "current_entry_description is #{current_entry_description}"
-			create_log_entry(current_log_name, current_start_time, current_log_length)
+			create_log_entry(current_log_name, current_start_time, current_log_length, current_entry_description) # CURRENT OBJECT!
 			true
 		else
 			false
@@ -222,8 +222,11 @@ class Tlog::Storage::Disk
 
 	def current_entry_description
 		contents = File.read(current_path)
-		contents.slice! current_log_name
-		contents.split(' ', 5)[3]
+		split_contents = contents.split(' ', 5)
+		for i in 0..split_contents.length - 2
+			contents.slice! split_contents[i]
+		end
+		contents.strip # Now contains only description
 	end
 
 	def current_log_length
@@ -237,9 +240,9 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def create_log_entry(name, start_time, log_length)
+	def create_log_entry(name, start_time, log_length, log_description)
 		log_storage.initial_log_length = log_length if log_length
-		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil)
+		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description)
 		update_log_storage(log_path(name), new_entry)
 		log_storage.create_entry
 	end

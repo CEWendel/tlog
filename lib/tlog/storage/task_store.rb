@@ -21,7 +21,7 @@ class Tlog::Storage::Task_Store
 		return commands unless head_hash_value
 		hash_value = head_hash_value
 		begin 
-			@entry = Tlog::Task_Entry.new(nil, nil, hash_value)
+			@entry = Tlog::Task_Entry.new(nil, nil, hash_value, nil)
 			return nil unless update_cur_entry
 			commands << @entry
 			hash_value = entry_hash_value
@@ -71,13 +71,16 @@ class Tlog::Storage::Task_Store
 			for i in 1..6
 				if i < 4
 					start_time << split_contents[i] + " "
+					contents.slice! split_contents[i]
 				else
 					end_time << split_contents[i] + " "
+					contents.slice! split_contents[i]
 				end
 			end
-			@entry.start_time = Time.parse(start_time)
-			@entry.end_time = Time.parse(end_time)
-			@entry.reset_length
+			entry.description = contents
+			entry.start_time = Time.parse(start_time)
+			entry.end_time = Time.parse(end_time)
+			entry.reset_length
 			true
 		else
 			false
@@ -114,8 +117,9 @@ class Tlog::Storage::Task_Store
 
 	def write_to_entry(path)
 		previous_entry ? content = previous_entry : content = "none"
-		time_log = @entry.start_time.to_s + " " + @entry.end_time.to_s
+		time_log = entry.start_time.to_s + " " + entry.end_time.to_s
 		content += "\n" + time_log
+		content += "\n" + entry.description
 		File.open(path, 'w'){ |f| f.write(content) }
 	end
 
