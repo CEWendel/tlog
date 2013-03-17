@@ -58,7 +58,7 @@ class Tlog::Command::Log < Tlog::Command
 	def display_entries(entries, output)
 		if entries.size > 0
 			entries.each do |entry|
-				out_str = "\t%-4s   %16s  %11s         %9s" % [
+				out_str = "\t%-4s   %16s  %11s         %s" % [
 					date_time_format.timestamp(entry.start_time),
 					date_time_format.timestamp(entry.end_time),
 					seconds_format.duration(entry.length.to_s),
@@ -78,26 +78,29 @@ class Tlog::Command::Log < Tlog::Command
 	end
 
 	def print_time_left(log_name, log_length, output)
+		# should just get storage object...
 		if (storage.current_log_name == log_name) && storage.cur_log_length
-			puts "cur_log_length is #{storage.cur_log_length}"
 			log_length = storage.cur_log_length
-			puts "log_length is #{log_length}"
 		end
+		puts "log_length is #{log_length}"
 		log_length = update_log_length(log_length) if storage.time_since_start
 		if log_length
 			log_length = 0 if log_length < 0
 			output.line_red("Time left: #{seconds_format.duration log_length}") if log_length
+		else
+			puts "log_length is null"
 		end
 	end
 
+	# just print out the attributes of goddamn current object
 	def print_out_current(log_name, log_length, current_start_time, output)
 		if is_current_log_name?(log_name)
 			formatted_length = seconds_format.duration storage.time_since_start
-			out_str = out_str = "\t%-4s   %16s   %11s         %9s" % [
+			out_str = out_str = "\t%-4s   %16s   %11s         %s" % [
 				date_time_format.timestamp(current_start_time),
 				nil,
 				formatted_length,
-				"(no description)", 
+				storage.cur_entry_description, 
 			]
 			output.line(out_str)
 		end

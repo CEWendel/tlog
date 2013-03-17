@@ -120,6 +120,10 @@ class Tlog::Storage::Disk
 		end
 	end
 
+	def cur_entry_description
+		current_entry_description.strip
+	end
+
 	def current_log_name
 		File.open(current_path).first.strip if File.exists?(current_path)
 	end
