@@ -35,8 +35,6 @@ class Tlog::Command::Log < Tlog::Command
 	def display_log(log_name, length_threshold, output)
 		entries = storage.log_entries(log_name)
 		log_length = storage.log_length(log_name)
-		puts "log_length is #{log_length}"
-		puts "time since start is #{storage.time_since_start}"
 		if storage.start_time_string && is_current_log_name?(log_name)
 			start_time = Time.parse(storage.start_time_string)
 		end
@@ -80,16 +78,12 @@ class Tlog::Command::Log < Tlog::Command
 	def print_time_left(log_name, log_length, output)
 		# should just get storage object...
 		if (storage.current_log_name == log_name) && storage.cur_log_length
-			puts "cur log length is #{storage.cur_log_length}"
 			log_length = storage.cur_log_length
 		end
-		puts "log_length is #{log_length}"
 		log_length = update_log_length(log_length) if storage.time_since_start
 		if log_length
 			log_length = 0 if log_length < 0
 			output.line_red("Time left: #{seconds_format.duration log_length}") if log_length
-		else
-			puts "log_length is null"
 		end
 	end
 

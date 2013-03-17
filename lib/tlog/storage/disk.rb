@@ -196,10 +196,10 @@ class Tlog::Storage::Disk
 	def write_to_current(log_name, entry_description, log_length)
 		puts "entry_description is #{entry_description}"
 		# Create a current object, with a "read" method
-		File.open(current_name_path, 'w'){ |f| f.write(log_name)}
-		File.open(current_description_path, 'w'){ |f| f.write(entry_description)}
-		File.open(current_length_path, 'w') { |f| f.write(log_length)}
-		File.open(current_start_path, 'w'){ |f| f.write(Time.now.to_s)}
+		File.open(current_name_path, 'w'){ |f| f.write(log_name)} 
+		File.open(current_description_path, 'w'){ |f| f.write(entry_description)} if entry_description
+		File.open(current_length_path, 'w') { |f| f.write(log_length)} if log_length
+		File.open(current_start_path, 'w'){ |f| f.write(Time.now.to_s)} 
 	end
 
 	def current_exists?

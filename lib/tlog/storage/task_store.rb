@@ -91,14 +91,10 @@ class Tlog::Storage::Task_Store
 		create_head unless File.exists?(head_path)
 		content = entry.hash
 		if initial_log_length
-			puts "initial tlog length"
 			tlog_length = initial_log_length.to_i
 		else
-			puts "HI"
-			puts "weird" if get_tlog_length
 			tlog_length = get_tlog_length if get_tlog_length
 		end
-		puts "tlog_length is #{tlog_length}"
 		content += "\n" + lengths_differnce(entry_length, tlog_length) if tlog_length
 		File.open(head_path, 'w') { |f| f.write(content) }
 	end
