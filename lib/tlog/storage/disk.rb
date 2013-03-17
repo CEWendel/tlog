@@ -82,13 +82,24 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def log_length(log_name)
+	def log_length(log_name) # change to goal
 		if log_path(log_name)
 			log_storage.log_path = log_path(log_name)
 			log_storage.get_tlog_length
 		else
 			nil
 		end
+	end
+
+	def log_duration(log_name)
+		duration = 0
+		if current_log_name == log_name
+			duration += time_since_start
+		end
+		log_entries(log_name).each do |entry|
+			duration += entry.length
+		end
+		duration
 	end
 
 	def find_repo(dir)

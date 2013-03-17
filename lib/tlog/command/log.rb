@@ -42,8 +42,9 @@ class Tlog::Command::Log < Tlog::Command
 		print_log_name(log_name, output)
 		print_time_left(log_name, log_length, output)
 		print_header(output)
-		print_out_current(log_name, log_length, start_time, output)
+		print_current(log_name, log_length, start_time, output)
 		display_entries(entries, output)
+		print_total(log_name, output)
 	end
 
 	def display_all(length_threshold, output)
@@ -71,6 +72,12 @@ class Tlog::Command::Log < Tlog::Command
 		output.line("\tStart               End                    Duration        Description")
 	end 
 
+	def print_total(log_name, output)
+		#output.line("-") * 52
+		output.line "-" * 100
+		output.line("\tTotal%45s " % seconds_format.duration(storage.log_duration(log_name)))
+	end
+
 	def print_log_name(log_name, output)
 		output.line_yellow("Log: #{log_name}")
 	end
@@ -88,7 +95,7 @@ class Tlog::Command::Log < Tlog::Command
 	end
 
 	# just print out the attributes of goddamn current object
-	def print_out_current(log_name, log_length, current_start_time, output)
+	def print_current(log_name, log_length, current_start_time, output)
 		if is_current_log_name?(log_name)
 			formatted_length = seconds_format.duration storage.time_since_start
 			out_str = out_str = "\t%-4s   %16s   %11s         %s" % [
@@ -98,6 +105,7 @@ class Tlog::Command::Log < Tlog::Command
 				storage.cur_entry_description, 
 			]
 			output.line(out_str)
+			storage.time_since_start
 		end
 	end
 
