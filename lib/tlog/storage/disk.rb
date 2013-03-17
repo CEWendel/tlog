@@ -126,7 +126,7 @@ class Tlog::Storage::Disk
 
 	def current_log_name
 		name_contents = File.read(current_name_path) if File.exists?(current_name_path)
-		name_contents.strip
+		name_contents.strip if name_contents
 	end
 
 	def get_current_start_time 
@@ -199,6 +199,7 @@ class Tlog::Storage::Disk
 		File.open(current_name_path, 'w'){ |f| f.write(log_name)}
 		File.open(current_description_path, 'w'){ |f| f.write(entry_description)}
 		File.open(current_length_path, 'w') { |f| f.write(log_length)}
+		File.open(current_start_path, 'w'){ |f| f.write(Time.now.to_s)}
 	end
 
 	def current_exists?
@@ -217,17 +218,17 @@ class Tlog::Storage::Disk
 
 	def current_start_time
 		start_contents = File.read(current_start_path) if File.exists?(current_start_path)
-		start_contents.strip
+		start_contents.strip if start_contents
 	end
 
 	def current_entry_description
-		description_contets = File.read(current_description_path) if File.exists?(current_description_path)
-		description_contets.strip
+		description_contents = File.read(current_description_path) if File.exists?(current_description_path)
+		description_contents.strip if description_contents
 	end
 
 	def current_log_length
 		length_contents = File.read(current_length_path) if File.exists?(current_length_path)
-		length_contents.strip
+		length_contents.strip if length_contents
 	end
 
 	def create_log_entry(name, start_time, log_length, log_description)
