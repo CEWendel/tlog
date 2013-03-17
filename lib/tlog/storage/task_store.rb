@@ -33,8 +33,8 @@ class Tlog::Storage::Task_Store
 		if File.exists?(head_path)
 			content = File.read(head_path)
 			split_contents = content.split(' ', 2)
-			if split_contents.length == 3
-				split_contents[2].to_i
+			if split_contents.length == 2
+				split_contents[1].to_i
 			else
 				nil
 			end
