@@ -40,11 +40,10 @@ class Tlog::Command::Log < Tlog::Command
 		end
 		return if length_exceeds_threshold?(log_length, length_threshold)
 		print_log_name(log_name, output)
-		print_time_left(log_name, log_length, output)
 		print_header(output)
 		print_current(log_name, log_length, start_time, output)
 		display_entries(entries, output)
-		print_total(log_name, output)
+		print_footer(log_name, log_length, output)
 	end
 
 	def display_all(length_threshold, output)
@@ -68,13 +67,18 @@ class Tlog::Command::Log < Tlog::Command
 		end
 	end
 
+	def print_footer(log_name, log_length, output)
+		output.line "-" * 100
+		print_total(log_name, output)
+		print_time_left(log_name, log_length, output)
+	end
+
 	def print_header(output)
 		output.line("\tStart               End                    Duration        Description")
 	end 
 
 	def print_total(log_name, output)
 		#output.line("-") * 52
-		output.line "-" * 100
 		output.line("\tTotal%45s " % seconds_format.duration(storage.log_duration(log_name)))
 	end
 
@@ -90,7 +94,7 @@ class Tlog::Command::Log < Tlog::Command
 		log_length = update_log_length(log_length) if storage.time_since_start
 		if log_length
 			log_length = 0 if log_length < 0
-			output.line_red("Time left: #{seconds_format.duration log_length}") if log_length
+			output.line_red("\tTime left: %39s" % seconds_format.duration(log_length)) if log_length
 		end
 	end
 
