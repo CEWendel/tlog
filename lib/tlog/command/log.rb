@@ -80,6 +80,7 @@ class Tlog::Command::Log < Tlog::Command
 	def print_time_left(log_name, log_length, output)
 		# should just get storage object...
 		if (storage.current_log_name == log_name) && storage.cur_log_length
+			puts "cur log length is #{storage.cur_log_length}"
 			log_length = storage.cur_log_length
 		end
 		puts "log_length is #{log_length}"

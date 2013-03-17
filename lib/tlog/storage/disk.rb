@@ -100,11 +100,11 @@ class Tlog::Storage::Disk
 	end
 
 	def start_time_string
-		current_start_time if File.exists?(current_path)
+		current_start_time
 	end
 
 	def time_since_start
-		if File.exists?(current_path)
+		if Dir.exists?(current_path)
 			difference = Time.now - Time.parse(current_start_time)
 			difference.to_i
 		else
@@ -121,11 +121,12 @@ class Tlog::Storage::Disk
 	end
 
 	def cur_entry_description
-		current_entry_description.strip
+		current_entry_description
 	end
 
 	def current_log_name
-		File.open(current_path).first.strip if File.exists?(current_path)
+		name_contents = File.read(current_name_path) if File.exists?(current_name_path)
+		name_contents.strip
 	end
 
 	def get_current_start_time 
@@ -171,8 +172,8 @@ class Tlog::Storage::Disk
 	def update_current(log_name, entry_description, log_length)
 		puts "update_current called, log name is #{log_name}"
 		puts "filename for current is #{current_path}"
-		if !File.exists?(current_path)
-			FileUtils.touch(current_path)
+		unless Dir.exists?(current_path)
+			FileUtils.mkdir_p(current_path)
 			write_to_current(log_name, entry_description, log_length)
 			true
 		else
@@ -182,10 +183,10 @@ class Tlog::Storage::Disk
 
 	def delete_current(log_name) # Change this method name or add one
 		puts "delete_current called, log name is #{log_name}"
-		if File.exists?(current_path)
+		if Dir.exists?(current_path)
 			if current_log_name == log_name
-				FileUtils.rm(current_path)
-				git.remove(current_path)
+				FileUtils.rm_rf(current_path)
+				git.remove(current_path, {:recursive => 'r'})
 			end
 		else
 			false
@@ -194,9 +195,10 @@ class Tlog::Storage::Disk
 
 	def write_to_current(log_name, entry_description, log_length)
 		puts "entry_description is #{entry_description}"
-		content = log_name + "\n" + Time.new.to_s + "\n" + entry_description
-		content << "\n" + log_length.to_s if log_length
-		File.open(current_path, 'w') { |f| f.write(content)}
+		# Create a current object, with a "read" method
+		File.open(current_name_path, 'w'){ |f| f.write(log_name)}
+		File.open(current_description_path, 'w'){ |f| f.write(entry_description)}
+		File.open(current_length_path, 'w') { |f| f.write(log_length)}
 	end
 
 	def current_exists?
@@ -204,7 +206,7 @@ class Tlog::Storage::Disk
 	end
 
 	def stop_current
-		if File.exists?(current_path)
+		if Dir.exists?(current_path)
 			puts "current_entry_description is #{current_entry_description}"
 			create_log_entry(current_log_name, current_start_time, current_log_length, current_entry_description) # CURRENT OBJECT!
 			true
@@ -214,36 +216,18 @@ class Tlog::Storage::Disk
 	end
 
 	def current_start_time
-		contents = File.read(current_path)
-		contents.slice! current_log_name
-		start_time = contents
-		split_contents = contents.split(' ', 5)
-		if split_contents.length == 5
-			contents.slice! split_contents[4]
-			start_time = contents
-		end
-		start_time.strip
+		start_contents = File.read(current_start_path) if File.exists?(current_start_path)
+		start_contents.strip
 	end
 
 	def current_entry_description
-		contents = File.read(current_path)
-		split_contents = contents.split(' ', 5)
-		for i in 0..split_contents.length - 2
-			contents.slice! split_contents[i]
-		end
-		contents.strip # Now contains only description
+		description_contets = File.read(current_description_path) if File.exists?(current_description_path)
+		description_contets.strip
 	end
 
 	def current_log_length
-		contents = File.read(current_path)
-		contents.slice! current_log_name
-		split_contents = contents.split(' ', 5)
-		if split_contents.length == 5
-			puts "current_log_length is #{split_contents[4]}"
-			log_length = split_contents[4]
-		else
-			nil
-		end
+		length_contents = File.read(current_length_path) if File.exists?(current_length_path)
+		length_contents.strip
 	end
 
 	def create_log_entry(name, start_time, log_length, log_description)
@@ -273,5 +257,21 @@ class Tlog::Storage::Disk
 	def current_path
 		File.expand_path(File.join('current'))
 	end
+
+	def current_name_path
+		File.join(current_path, 'NAME')			
+	end
+
+	def current_start_path
+		File.join(current_path, 'START')
+	end
+
+	def current_length_path
+		File.join(current_path, 'LENGTH')
+	end 
+
+	def current_description_path
+		File.join(current_path, 'DESCRIPTION')
+	end 
 
 end
