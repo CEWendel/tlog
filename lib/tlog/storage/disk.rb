@@ -239,6 +239,7 @@ class Tlog::Storage::Disk
 		contents.slice! current_log_name
 		split_contents = contents.split(' ', 5)
 		if split_contents.length == 5
+			puts "current_log_length is #{split_contents[4]}"
 			log_length = split_contents[4]
 		else
 			nil
