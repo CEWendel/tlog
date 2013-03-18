@@ -25,7 +25,6 @@ class Tlog::Storage::Task_Store
 			@entry = Tlog::Task_Entry.new(nil, nil, hash_value, nil, nil)
 			return nil unless update_cur_entry
 			commands << @entry
-			puts "entry_parent_hash is #{entry_parent_hash}"
 			hash_value = entry_parent_hash
 		end until hash_value == "none"
 		return commands
@@ -54,8 +53,6 @@ class Tlog::Storage::Task_Store
 	def update_cur_entry
 		if Dir.exists?(entry_path)
 			entry.description = entry_description
-			puts "entry start time is #{entry_start_time}"
-			puts "entry end time is #{entry_end_time}"
 			entry.start_time = entry_start_time
 			entry.end_time = entry_end_time
 			entry.reset_length
