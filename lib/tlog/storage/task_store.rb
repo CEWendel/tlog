@@ -22,10 +22,11 @@ class Tlog::Storage::Task_Store
 		return commands unless head_hash_value
 		hash_value = head_hash_value
 		begin 
-			@entry = Tlog::Task_Entry.new(nil, nil, hash_value, nil)
+			@entry = Tlog::Task_Entry.new(nil, nil, hash_value, nil, nil)
 			return nil unless update_cur_entry
 			commands << @entry
-			hash_value = entry_hash_value
+			puts "entry_parent_hash is #{entry_parent_hash}"
+			hash_value = entry_parent_hash
 		end until hash_value == "none"
 		return commands
 	end
@@ -50,13 +51,11 @@ class Tlog::Storage::Task_Store
 		File.open(head_path).first.strip if File.exists?(head_path)
 	end
 
-	def entry_hash_value
-		Pathname.new(entry_path).basename
-	end
-
 	def update_cur_entry
 		if Dir.exists?(entry_path)
 			entry.description = entry_description
+			puts "entry start time is #{entry_start_time}"
+			puts "entry end time is #{entry_end_time}"
 			entry.start_time = entry_start_time
 			entry.end_time = entry_end_time
 			entry.reset_length
@@ -106,6 +105,10 @@ class Tlog::Storage::Task_Store
 		Time.parse(end_time.strip)
 	end
 
+	def entry_parent_hash
+		read_file(entry_parent_path)
+	end
+
 	def entry_description
 		read_file(entry_description_path)
 	end
@@ -123,6 +126,10 @@ class Tlog::Storage::Task_Store
 		end
 	end
 
+	def write_file(path, content)
+		File.open(path, 'w'){ |f| f.write(content)}
+	end
+
 	def create_head
 		FileUtils.touch(head_path)
 	end
@@ -132,13 +139,12 @@ class Tlog::Storage::Task_Store
 	end
 
 	def write_to_entry
-		head_hash_value ? content = head_hash_value : content = "none"
+		head_hash_value ? parent_hash = head_hash_value : parent_hash = "none"
 		time_log = entry.start_time.to_s + " " + entry.end_time.to_s
-		#content += "\n" + time_log.strip
-		#content += "\n" + entry.description
-		File.open(entry_time_path, 'w'){ |f| f.write(time_log.strip)}
-		File.open(entry_description_path, 'w'){ |f| f.write(entry.description)} if entry.description
-		File.open(entry_owner_path, 'w'){ |f| f.write(entry.owner)} if entry.owner
+		write_file(entry_parent_path, parent_hash)
+		write_file(entry_time_path, time_log.strip)
+		write_file(entry_description_path, entry.description) if entry.description
+		write_file(entry_owner_path, entry.owner) if entry.owner
 	end
 
 	def entry_path
