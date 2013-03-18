@@ -227,24 +227,31 @@ class Tlog::Storage::Disk
 		end
 	end
 
+	#Eventually want to take this out and just create the entry on start
 	def current_start_time
-		start_contents = File.read(current_start_path) if File.exists?(current_start_path)
-		start_contents.strip if start_contents
+		read_file(current_start_path)
 	end
 
 	def current_entry_description
-		description_contents = File.read(current_description_path) if File.exists?(current_description_path)
-		description_contents.strip if description_contents
+		read_file(current_description_path)
 	end
 
 	def current_log_length
-		length_contents = File.read(current_length_path) if File.exists?(current_length_path)
-		length_contents.strip if length_contents
+		read_file(current_length_path)
+	end
+
+	def read_file(path)
+		if File.exists?(path)
+			contents = File.read(path)
+			contents.strip
+		else
+			nil
+		end
 	end
 
 	def create_log_entry(name, start_time, log_length, log_description)
 		log_storage.initial_log_length = log_length if log_length
-		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description)
+		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description, 'chriwend')
 		update_log_storage(log_path(name), new_entry)
 		log_storage.create_entry
 	end

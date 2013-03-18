@@ -6,12 +6,14 @@ class Tlog::Task_Entry
 	attr_accessor :length
 	attr_accessor :hash
 	attr_accessor :description
+	attr_accessor :owner
 
-	def initialize(start_time, end_time, hash, description)
+	def initialize(start_time, end_time, hash, description, owner)
 		@start_time = start_time
 		@end_time = end_time
 		@hash = hash 
 		@description = description
+		@owner = owner
 		reset_length
 	end
 

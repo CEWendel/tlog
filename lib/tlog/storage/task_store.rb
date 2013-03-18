@@ -1,6 +1,7 @@
 # Should be renamed to "log_store"
 require 'fileutils'
 require 'securerandom'
+require 'pathname'
 require 'time'
 
 class Tlog::Storage::Task_Store
@@ -11,8 +12,8 @@ class Tlog::Storage::Task_Store
 
 	def create_entry
 		@entry.hash = generate_random_hex
-		FileUtils.touch(task_entry_path)
-		write_to_entry(task_entry_path)
+		FileUtils.mkdir_p(entry_path)
+		write_to_entry
 		update_head(entry.length)
 	end
 
@@ -50,28 +51,14 @@ class Tlog::Storage::Task_Store
 	end
 
 	def entry_hash_value
-		File.open(task_entry_path).first.strip
+		Pathname.new(entry_path).basename
 	end
 
 	def update_cur_entry
-		if File.exists?(task_entry_path)
-			start_time = ""
-			end_time = ""
-			contents = File.read(task_entry_path)
-			split_contents = contents.split(' ',8)
-			contents.slice! split_contents[0]
-			for i in 1..6
-				if i < 4
-					start_time << split_contents[i] + " "
-					contents.slice! split_contents[i]
-				else
-					end_time << split_contents[i] + " "
-					contents.slice! split_contents[i]
-				end
-			end
-			entry.description = contents.strip
-			entry.start_time = Time.parse(start_time)
-			entry.end_time = Time.parse(end_time)
+		if Dir.exists?(entry_path)
+			entry.description = entry_description
+			entry.start_time = entry_start_time
+			entry.end_time = entry_end_time
 			entry.reset_length
 			true
 		else
@@ -99,6 +86,43 @@ class Tlog::Storage::Task_Store
 		File.open(head_path, 'w') { |f| f.write(content) }
 	end
 
+	def entry_start_time
+		time_contents = read_file(entry_time_path)
+		start_time = ""
+		split_contents = time_contents.split(" ", 6)
+		for i in 0..2
+			start_time += split_contents[i] + " "
+		end
+		Time.parse(start_time.strip)
+	end
+
+	def entry_end_time
+		time_contents = read_file(entry_time_path)
+		end_time = ""
+		split_contents = time_contents.split(" ", 6)
+		for i in 3..5
+			end_time += split_contents[i] + " "
+		end
+		Time.parse(end_time.strip)
+	end
+
+	def entry_description
+		read_file(entry_description_path)
+	end
+
+	def entry_owner
+		read_file(entry_owner_path)
+	end
+
+	def read_file(path)
+		if File.exists?(path)
+			contents = File.read(path)
+			contents.strip
+		else
+			nil
+		end
+	end
+
 	def create_head
 		FileUtils.touch(head_path)
 	end
@@ -107,18 +131,34 @@ class Tlog::Storage::Task_Store
 		File.join(log_path, "HEAD")
 	end
 
-	def write_to_entry(path)
+	def write_to_entry
 		head_hash_value ? content = head_hash_value : content = "none"
 		time_log = entry.start_time.to_s + " " + entry.end_time.to_s
-		content += "\n" + time_log.strip
-		content += "\n" + entry.description
-		puts "entry descriptions is #{entry.description}"
-		puts "content is #{content}"
-		File.open(path, 'w'){ |f| f.write(content) }
+		#content += "\n" + time_log.strip
+		#content += "\n" + entry.description
+		File.open(entry_time_path, 'w'){ |f| f.write(time_log.strip)}
+		File.open(entry_description_path, 'w'){ |f| f.write(entry.description)} if entry.description
+		File.open(entry_owner_path, 'w'){ |f| f.write(entry.owner)} if entry.owner
 	end
 
-	def task_entry_path
+	def entry_path
 		File.join(log_path, entry.hash)
+	end
+
+	def entry_parent_path
+		File.join(entry_path, 'PARENT')
+	end
+
+	def entry_time_path
+		File.join(entry_path, 'TIME')
+	end
+
+	def entry_description_path
+		File.join(entry_path, 'DESCRIPTION')
+	end
+
+	def entry_owner_path
+		File.join(entry_path, 'OWNER')
 	end
 
 	def generate_random_hex
