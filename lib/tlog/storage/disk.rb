@@ -131,6 +131,10 @@ class Tlog::Storage::Disk
 		end
 	end
 
+	def cur_entry_owner
+		git.config["user.email"].split('@').first rescue ''
+	end
+
 	def cur_entry_description
 		current_entry_description
 	end
@@ -251,7 +255,7 @@ class Tlog::Storage::Disk
 
 	def create_log_entry(name, start_time, log_length, log_description)
 		log_storage.initial_log_length = log_length if log_length
-		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description, 'chriwend')
+		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description, cur_entry_owner)
 		update_log_storage(log_path(name), new_entry)
 		log_storage.create_entry
 	end

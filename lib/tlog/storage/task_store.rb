@@ -52,6 +52,7 @@ class Tlog::Storage::Task_Store
 
 	def update_cur_entry
 		if Dir.exists?(entry_path)
+			entry.owner = entry_owner
 			entry.description = entry_description
 			entry.start_time = entry_start_time
 			entry.end_time = entry_end_time
