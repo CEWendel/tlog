@@ -55,6 +55,7 @@ class Tlog::Storage::Disk
 		unless Dir.exists?(path)
 			FileUtils.mkdir_p(path)
 			log_storage.log_path = path
+			puts "log.goal is #{log.goal}"
 			log_storage.update_head(log.goal)
 			git.add
 			git.commit("Created log #{log.name}")
