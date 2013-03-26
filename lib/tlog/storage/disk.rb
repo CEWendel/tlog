@@ -56,6 +56,9 @@ class Tlog::Storage::Disk
 			FileUtils.mkdir_p(path)
 			log_storage.log_path = path
 			log_storage.update_head(log.goal) if log.goal
+			true
+		else
+			false
 		end
 	end
 
