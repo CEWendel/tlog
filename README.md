@@ -13,4 +13,5 @@ Funcitonality
 3) --help, feedback for all commands
 4) Clean up code
 5) Test collaboration
+6) Use dicitonaries
 

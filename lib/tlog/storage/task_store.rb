@@ -44,6 +44,18 @@ class Tlog::Storage::Task_Store
 		end 
 	end
 
+	def update_head(entry_length)
+		create_head unless File.exists?(head_path)
+		content = entry.hash
+		if initial_log_length
+			tlog_length = initial_log_length.to_i
+		else
+			tlog_length = get_tlog_length if get_tlog_length
+		end
+		content += "\n" + lengths_differnce(entry_length, tlog_length) if tlog_length
+		File.open(head_path, 'w') { |f| f.write(content) }
+	end
+
 	private
 
 	def head_hash_value
@@ -69,18 +81,6 @@ class Tlog::Storage::Task_Store
 			new_tlog_length = tlog_length - entry_length
 		end
 		new_tlog_length.to_s
-	end
-
-	def update_head(entry_length)
-		create_head unless File.exists?(head_path)
-		content = entry.hash
-		if initial_log_length
-			tlog_length = initial_log_length.to_i
-		else
-			tlog_length = get_tlog_length if get_tlog_length
-		end
-		content += "\n" + lengths_differnce(entry_length, tlog_length) if tlog_length
-		File.open(head_path, 'w') { |f| f.write(content) }
 	end
 
 	def entry_start_time

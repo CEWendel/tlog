@@ -7,12 +7,14 @@ require 'git'
 
 class Tlog::Storage::Disk
 
-	attr_reader :git
-	attr_reader :tlog_dir
-	attr_reader :tlog_working
-	attr_reader :tlog_index
-	attr_reader :working_dir
-	attr_reader :log_storage
+	attr_accessor :git
+	attr_accessor :tlog_dir
+	attr_accessor :tlog_working
+	attr_accessor :tlog_index
+	attr_accessor :working_dir
+	attr_accessor :log_storage
+
+	# Class methods 'create_repo' 'all_logs', also 'create' command
 
 	def initialize(git_dir)	
 		@git = Git.open(find_repo(git_dir))
@@ -30,6 +32,46 @@ class Tlog::Storage::Disk
 		end
 
 		@log_storage = Tlog::Storage::Task_Store.new
+	end
+
+	def read_logs
+		all_logs = []
+		all_log_dirs.each do |log_path|
+			log = Tlog::Entity::Log.new
+			log_storage.log_path = log_path
+			log.name = log_path.basename
+			puts "log name is #{log.name}"
+			log.entries = log_storage.get_tlog_entries
+			puts "log entries are #{log.entries}"
+			log.goal = log_storage.get_tlog_length
+			puts "log goal is #{log.goal}"
+			all_logs.push(log)
+		end
+		all_logs
+	end
+
+	def create_log(log)
+		path = log_path(log.name)
+		unless Dir.exists?(path)
+			FileUtils.mkdir_p(path)
+			log_storage.log_path = path
+			log_storage.update_head(log.goal) if log.goal
+		end
+	end
+
+	def require_log(log)
+		decode_log_path(log_path(log.name))
+	end
+
+	def decode_log_path(log_path)
+		if Dir.exists?(log_path)
+			log = Tlog::Entity::Log.new
+			log_storage.log_path = log_path
+			log.name = log_path.basename
+			log.entries = log_storage.get_tlog_entries
+			log.goal = log_storage.get_tlog_length
+		end
+		return log
 	end
 
 	def start_log(log_name, entry_description, log_length)
@@ -96,7 +138,7 @@ class Tlog::Storage::Disk
 		if current_log_name == log_name
 			duration += time_since_start
 		end
-		log_entries(log_name).each do |entry|
+		log_entries(log_name).each do |entry| # should just be able to do log.entries.each
 			duration += entry.length
 		end
 		duration
@@ -258,10 +300,6 @@ class Tlog::Storage::Disk
 		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description, cur_entry_owner)
 		update_log_storage(log_path(name), new_entry)
 		log_storage.create_entry
-	end
-
-	def create_log(log_name)
-		FileUtils.mkdir_p(log_path(log_name)) unless Dir.exists?(log_path(log_name))
 	end
 
 	def update_log_storage(log_path, log_entry)

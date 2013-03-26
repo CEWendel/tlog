@@ -31,6 +31,7 @@ class Tlog::Application
 	end
 
 	def all_commands
+		storage = working_dir_storage
 		commands = [
 			Tlog::Command::Test.new,
 			Tlog::Command::Init.new,
@@ -39,9 +40,10 @@ class Tlog::Application
 			Tlog::Command::Active.new,
 			Tlog::Command::Delete.new,
 			Tlog::Command::Log.new,
+			Tlog::Command::Create.new,
 		]
 		commands.each do |command|
-			command.storage = working_dir_storage
+			command.storage = storage
 			command.seconds_format = Tlog::Format::Seconds
 			command.date_time_format = Tlog::Format::DateTime
 		end

@@ -26,7 +26,12 @@ module Tlog
 
 	module Format
 	end
+
+	module Entity
+	end
 end
+
+require "chronic_duration"
 
 require 'tlog/command'
 require 'tlog/command/test'
@@ -36,6 +41,7 @@ require 'tlog/command/stop'
 require 'tlog/command/active'
 require 'tlog/command/delete'
 require 'tlog/command/log'
+require 'tlog/command/create'
 
 require 'tlog/task'
 
@@ -46,6 +52,8 @@ require 'tlog/storage/task_store'
 
 require 'tlog/format/seconds'
 require 'tlog/format/date_time'
+
+require 'tlog/entity/log'
 
 
 require 'tlog/error'
