@@ -6,6 +6,7 @@ require 'time'
 
 class Tlog::Storage::Task_Store
 
+	attr_accessor :cur_entry_hash
 	attr_accessor :entry
 	attr_accessor :log_path
 	attr_accessor :initial_log_length
@@ -29,6 +30,28 @@ class Tlog::Storage::Task_Store
 		end until hash_value == "none"
 		return commands
 	end
+
+	def entries
+		entries = []
+		unless head_hash_value
+			puts "lol wut"
+		end
+		return entries unless head_hash_value
+		hash_value = head_hash_value
+		begin 
+			puts "here"
+			cur_entry = entry_for_hash(hash_value)
+			entries.push(cur_entry)
+			hash_value = cur_entry.hash
+		end until hash_value == "none"
+		return entries
+	end
+
+	def entry_for_hash(hash)
+		cur_entry_hash = hash 
+		cur_entry = Tlog::Task_Entry.new(entry_start_time, entry_end_time,
+			entry_parent_hash, entry_description, entry_owner)
+	end 
 
 	def get_tlog_length
 		if File.exists?(head_path)
@@ -151,7 +174,7 @@ class Tlog::Storage::Task_Store
 	end
 
 	def entry_path
-		File.join(log_path, entry.hash)
+		File.join(log_path, cur_entry_hash)
 	end
 
 	def entry_parent_path

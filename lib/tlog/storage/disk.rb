@@ -112,8 +112,8 @@ class Tlog::Storage::Disk
 
 	def log_entries(log_name)
 		if log_path(log_name)
-			log_storage.log_path = log_path(log_name)
-			log_storage.get_tlog_entries
+			log_storage.log_path = log_path(log_name) # Reallly should be log_storage.path...
+			log_storage.entries
 		else
 			nil
 		end
