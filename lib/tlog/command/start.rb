@@ -62,9 +62,7 @@ class Tlog::Command::Start < Tlog::Command
 			log_length = ChronicDuration.parse(log_length) if log_length
 			puts "log_length is #{log_length}"
 			raise Tlog::Error::CommandInvalid, "Must specify log name" unless log_name
-			puts "up meah"
 			storage.start_log(log, entry_description, log_length)
-			puts "uhm here"
 		end
 	end
 end
