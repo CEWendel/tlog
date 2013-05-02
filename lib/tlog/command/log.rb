@@ -33,10 +33,8 @@ class Tlog::Command::Log < Tlog::Command
 	end
 
 	def display_log(log_name, length_threshold, output)
-		puts "here"
 		entries = storage.log_entries(log_name)
 		log_length = storage.log_length(log_name)
-		puts "here2"
 		if storage.start_time_string && is_current_log_name?(log_name)
 			start_time = Time.parse(storage.start_time_string)
 		end
@@ -44,7 +42,7 @@ class Tlog::Command::Log < Tlog::Command
 		print_log_name(log_name, output)
 		print_header(output)
 		print_current(log_name, log_length, start_time, output)
-		display_entries(entries, output)
+		display_entries(entries, output) if entries
 		print_footer(log_name, log_length, output)
 	end
 

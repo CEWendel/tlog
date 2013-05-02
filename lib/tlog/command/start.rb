@@ -54,7 +54,8 @@ class Tlog::Command::Start < Tlog::Command
 	private
 
 	def create_entry(log_name, entry_description, log_length)
-		log = require_log(log_name)
+		log = storage.require_log(log_name)
+		raise Tlog::Error::CommandInvalid, "Time log '#{log_name}' does not exist" unless log
 		new_entry = Tlog::Task_Entry.new
 		new_entry.start_time = Time.now
 		new_entry.description = entry_description

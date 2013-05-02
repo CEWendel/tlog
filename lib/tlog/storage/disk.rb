@@ -113,9 +113,7 @@ class Tlog::Storage::Disk
 	def log_entries(log_name)
 		if log_path(log_name)
 			log_storage.log_path = log_path(log_name)
-			puts "here4"
 			log_storage.get_tlog_entries
-			puts "here3"
 		else
 			nil
 		end
