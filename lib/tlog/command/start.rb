@@ -54,16 +54,17 @@ class Tlog::Command::Start < Tlog::Command
 	private
 
 	def create_entry(log_name, entry_description, log_length)
-		log = storage.require_log(log_name)
-		raise Tlog::Error::CommandInvalid, "Time log '#{log_name}' does not exist" unless log
-		new_entry = Tlog::Task_Entry.new
-		new_entry.start_time = Time.now
-		new_entry.description = entry_description
 		storage.in_branch do |wd|
+			log = storage.require_log(log_name)
+			raise Tlog::Error::CommandInvalid, "Time log '#{log_name}' does not exist" unless log
+			current_owner = storage.cur_entry_owner
+			new_entry = Tlog::Task_Entry.new(Time.now, nil, nil, entry_description, current_owner)
 			log_length = ChronicDuration.parse(log_length) if log_length
 			puts "log_length is #{log_length}"
 			raise Tlog::Error::CommandInvalid, "Must specify log name" unless log_name
-			storage.start_log(log_name, entry_description, log_length)
+			puts "up meah"
+			storage.start_log(log, entry_description, log_length)
+			puts "uhm here"
 		end
 	end
 end

@@ -66,16 +66,16 @@ class Tlog::Storage::Disk
 	end
 
 	def require_log(log_name)
-		decode_log_path(log_path(log_name))
+		decode_log_path(Pathname.new(log_path(log_name)))
 	end
 
-	def start_log(log_name, entry_description, log_length)
+	def start_log(log, entry_description, log_length)
 		puts "entry_description is #{entry_description}"
 		entry_description = '(no description)' unless entry_description
-		if update_current(log_name, entry_description, log_length)
-			create_log(log_name) # Creates directory if it has not already been created
+		if update_current(log, entry_description, log_length)
+			create_log(log) # Creates directory if it has not already been created
 			git.add
-			git.commit("Started log #{log_name}")
+			git.commit("Started log #{log.name}")
 			true
 		else
 			false
@@ -232,12 +232,12 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def update_current(log_name, entry_description, log_length)
-		puts "update_current called, log name is #{log_name}"
+	def update_current(log, entry_description, log_length)
+		puts "update_current called, log name is #{log.name}"
 		puts "filename for current is #{current_path}"
 		unless Dir.exists?(current_path)
 			FileUtils.mkdir_p(current_path)
-			write_to_current(log_name, entry_description, log_length)
+			write_to_current(log, entry_description, log_length)
 			true
 		else
 			false
@@ -256,10 +256,10 @@ class Tlog::Storage::Disk
 		end
 	end	
 
-	def write_to_current(log_name, entry_description, log_length)
+	def write_to_current(log, entry_description, log_length)
 		puts "entry_description is #{entry_description}"
 		# Create a current object, with a "read" method
-		File.open(current_name_path, 'w'){ |f| f.write(log_name)} 
+		File.open(current_name_path, 'w'){ |f| f.write(log.name)} 
 		File.open(current_description_path, 'w'){ |f| f.write(entry_description)} if entry_description
 		File.open(current_length_path, 'w') { |f| f.write(log_length)} if log_length
 		File.open(current_start_path, 'w'){ |f| f.write(Time.now.to_s)} 
