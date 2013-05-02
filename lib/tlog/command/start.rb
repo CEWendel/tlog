@@ -54,6 +54,10 @@ class Tlog::Command::Start < Tlog::Command
 	private
 
 	def create_entry(log_name, entry_description, log_length)
+		log = require_log(log_name)
+		new_entry = Tlog::Task_Entry.new
+		new_entry.start_time = Time.now
+		new_entry.description = entry_description
 		storage.in_branch do |wd|
 			log_length = ChronicDuration.parse(log_length) if log_length
 			puts "log_length is #{log_length}"

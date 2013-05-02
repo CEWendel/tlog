@@ -20,6 +20,11 @@ class Tlog::Storage::Task_Store
 	def get_tlog_entries
 		commands = Array.new
 		return commands unless head_hash_value
+		if(head_hash_value)
+			puts "headhash value not nil"
+		else
+			puts "nil as fuck"
+		end
 		hash_value = head_hash_value
 		begin 
 			@entry = Tlog::Task_Entry.new(nil, nil, hash_value, nil, nil)

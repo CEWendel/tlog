@@ -65,19 +65,8 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def require_log(log)
-		decode_log_path(log_path(log.name))
-	end
-
-	def decode_log_path(log_path)
-		if Dir.exists?(log_path)
-			log = Tlog::Entity::Log.new
-			log_storage.log_path = log_path
-			log.name = log_path.basename
-			log.entries = log_storage.get_tlog_entries
-			log.goal = log_storage.get_tlog_length
-		end
-		return log
+	def require_log(log_name)
+		decode_log_path(log_path(log_name))
 	end
 
 	def start_log(log_name, entry_description, log_length)
@@ -124,7 +113,9 @@ class Tlog::Storage::Disk
 	def log_entries(log_name)
 		if log_path(log_name)
 			log_storage.log_path = log_path(log_name)
+			puts "here4"
 			log_storage.get_tlog_entries
+			puts "here3"
 		else
 			nil
 		end
@@ -221,6 +212,17 @@ class Tlog::Storage::Disk
 	end
 
 	private
+
+	def decode_log_path(log_path)
+		if Dir.exists?(log_path)
+			log = Tlog::Entity::Log.new
+			log_storage.log_path = log_path
+			log.name = log_path.basename
+			log.entries = log_storage.get_tlog_entries
+			log.goal = log_storage.get_tlog_length
+		end
+		return log
+	end
 
 	def init_tlog_branch(tlog_branch = false)
 		in_branch(tlog_branch) do
