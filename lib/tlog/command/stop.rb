@@ -31,9 +31,9 @@ class Tlog::Command::Stop < Tlog::Command
 	private
 
 	def stop(log_name)
-		log = storage.require_log(log_name)
-		#new_entry = Tlog::Task_Entry.new(Time.parse(storage.start_time_string), Time.new, nil, )
 		storage.in_branch do |wd|
+			log = storage.require_log(log_name)
+			#new_entry = Tlog::Task_Entry.new(Time.parse(storage.start_time_string), Time.new, nil, )
 			storage.stop_log(log_name)
 		end
 	end
