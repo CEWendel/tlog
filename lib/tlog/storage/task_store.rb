@@ -34,13 +34,9 @@ class Tlog::Storage::Task_Store
 
 	def entries
 		entries = []
-		unless head_hash_value
-			puts "lol wut"
-		end
 		return entries unless head_hash_value
 		hash_value = head_hash_value
 		begin 
-			puts "here"
 			cur_entry = entry_for_hash(hash_value)
 			entries.push(cur_entry)
 			hash_value = cur_entry.hash
@@ -49,7 +45,7 @@ class Tlog::Storage::Task_Store
 	end
 
 	def entry_for_hash(hash)
-		cur_entry_hash = hash 
+		@cur_entry_hash = hash
 		cur_entry = Tlog::Task_Entry.new(entry_start_time, entry_end_time,
 			entry_parent_hash, entry_description, entry_owner)
 	end 
@@ -87,7 +83,13 @@ class Tlog::Storage::Task_Store
 	def head_hash_value
 		if File.exists?(head_path)
 			head_content = File.open(head_path).first
-			head_content.strip if head_content
+			if head_content
+				head_content.strip
+			else
+				nil
+			end
+		else
+			nil
 		end
 	end
 
