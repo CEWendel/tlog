@@ -305,6 +305,8 @@ class Tlog::Storage::Disk
 		log_storage.initial_log_length = log_length if log_length
 		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description, cur_entry_owner)
 		update_log_storage(log_path(name), new_entry)
+		puts "name is #{name}"
+		puts "log path is #{log_path(name)}"
 		log_storage.create_entry
 	end
 

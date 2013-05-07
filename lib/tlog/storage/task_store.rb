@@ -14,7 +14,7 @@ class Tlog::Storage::Task_Store
 	def create_entry
 		@entry.hash = generate_random_hex
 		@cur_entry_hash = entry.hash
-		FileUtils.mkdir_p(entry.hash)
+		FileUtils.mkdir_p(entry_path)
 		write_to_entry
 		update_head(entry.length)
 	end
