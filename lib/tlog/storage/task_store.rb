@@ -34,11 +34,11 @@ class Tlog::Storage::Task_Store
 
 	def entries
 		entries = []
-		puts "head_hash_value is #{head_hash_value}"
 		return entries unless head_hash_value
 		hash_value = head_hash_value
-		puts "head_hash_value is #{head_hash_value}"
 		begin 
+			@cur_entry_hash = hash_value
+			break unless Dir.exists?(entry_path)
 			cur_entry = entry_for_hash(hash_value)
 			entries.push(cur_entry)
 			hash_value = cur_entry.hash
@@ -47,7 +47,6 @@ class Tlog::Storage::Task_Store
 	end
 
 	def entry_for_hash(hash)
-		@cur_entry_hash = hash
 		cur_entry = Tlog::Task_Entry.new(entry_start_time, entry_end_time,
 			entry_parent_hash, entry_description, entry_owner)
 	end 

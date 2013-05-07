@@ -212,13 +212,10 @@ class Tlog::Storage::Disk
 	private
 
 	def decode_log_path(log_path)
-		puts "here1"
 		if Dir.exists?(log_path)
 			log = Tlog::Entity::Log.new
 			log_storage.log_path = log_path
-			puts "here2"
 			log.name = log_path.basename
-			puts "here3"
 			log.entries = log_storage.entries
 			log.goal = log_storage.get_tlog_length
 		end

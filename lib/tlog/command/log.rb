@@ -34,7 +34,6 @@ class Tlog::Command::Log < Tlog::Command
 
 	def display_log(log_name, length_threshold, output)
 		entries = storage.log_entries(log_name)
-		puts "entries are #{entries}"
 		log_length = storage.log_length(log_name)
 		if storage.start_time_string && is_current_log_name?(log_name)
 			start_time = Time.parse(storage.start_time_string)
