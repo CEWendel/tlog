@@ -34,8 +34,10 @@ class Tlog::Storage::Task_Store
 
 	def entries
 		entries = []
+		puts "head_hash_value is #{head_hash_value}"
 		return entries unless head_hash_value
 		hash_value = head_hash_value
+		puts "head_hash_value is #{head_hash_value}"
 		begin 
 			cur_entry = entry_for_hash(hash_value)
 			entries.push(cur_entry)
@@ -72,10 +74,8 @@ class Tlog::Storage::Task_Store
 		else
 			tlog_length = get_tlog_length if get_tlog_length
 		end
-		if tlog_length
-			content += "\n" + lengths_differnce(entry_length, tlog_length)
-			File.open(head_path, 'w') { |f| f.write(content) }
-		end
+		content += "\n" + lengths_differnce(entry_length, tlog_length) if tlog_length
+		File.open(head_path, 'w') { |f| f.write(content) }
 	end
 
 	private
@@ -86,9 +86,11 @@ class Tlog::Storage::Task_Store
 			if head_content
 				head_content.strip
 			else
+				puts "file is empty"
 				nil
 			end
 		else
+			puts "file does not exist"
 			nil
 		end
 	end
