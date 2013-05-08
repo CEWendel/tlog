@@ -21,7 +21,6 @@ class Tlog::Command::Start < Tlog::Command
 		raise Tlog::Error::CommandInvalid, "Log already in progress" unless create_entry(
 			input.args[0], 
 			input.options[:description],
-			input.options[:length],
 		)
 		#if input.args[0].nil?
 			# no task name given
@@ -42,10 +41,6 @@ class Tlog::Command::Start < Tlog::Command
 	def options(parser, options)
 		parser.banner = "usage: tlog start <log_name>"
 
-		parser.on("-l", "--length <log_length>") do |length|
-      		options[:length] = length
-    	end
-
     	parser.on("-d", "--description <description>") do |description|
     		options[:description] = description
     	end
@@ -53,16 +48,15 @@ class Tlog::Command::Start < Tlog::Command
 
 	private
 
-	def create_entry(log_name, entry_description, log_length)
+	def create_entry(log_name, entry_description)
 		storage.in_branch do |wd|
 			log = storage.require_log(log_name)
 			raise Tlog::Error::CommandInvalid, "Time log '#{log_name}' does not exist" unless log
 			current_owner = storage.cur_entry_owner
 			new_entry = Tlog::Task_Entry.new(Time.now, nil, nil, entry_description, current_owner)
-			log_length = ChronicDuration.parse(log_length) if log_length
-			puts "log_length is #{log_length}"
+			#log_length = ChronicDuration.parse(log_length) if log_length
 			raise Tlog::Error::CommandInvalid, "Must specify log name" unless log_name
-			storage.start_log(log, entry_description, log_length)
+			storage.start_log(log, entry_description)
 		end
 	end
 end

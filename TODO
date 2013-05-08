@@ -2,3 +2,4 @@
 -Change log class to display class
 -Change task_store class to log_store class
 -Change --length to --goal
+-tlog stop should figure out what the time log the last entry was on
