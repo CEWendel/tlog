@@ -59,17 +59,18 @@ class Tlog::Storage::Disk
 		else
 			false
 		end
-		#unless Dir.exists?(path)
-		#	FileUtils.mkdir_p(path)
-		#	#log_storage.log_path = path
-		#	puts "log.goal is #{log.goal}"
-		#	#log_storage.update_head(log.goal)
-		#	git.add
-		#	git.commit("Created log #{log.name}")
-		#	true
-		#else
-		#	false
-		#end
+		# path = log_path(log.name)
+		# unless Dir.exists?(path)
+		# 	FileUtils.mkdir_p(path)
+		# 	#log_storage.log_path = path
+		# 	puts "log.goal is #{log.goal}"
+		# 	#log_storage.update_head(log.goal)
+		# 	git.add
+		# 	git.commit("Created log #{log.name}")
+		# 	true
+		# else
+		# 	false
+		# end
 	end
 
 	def require_log(log_name)

@@ -11,8 +11,15 @@ class Tlog::Entity::Log
 	end
 
 	def create
-		FileUtils.mkdir_p(@path) unless Dir.exists?(@path)
+		unless Dir.exists?(@path)
+			FileUtils.mkdir_p(@path)
+			File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
+		end
 	end
 
 	private
+	
+	def goal_path
+		File.join(@path, 'GOAL')
+	end
 end
