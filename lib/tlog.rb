@@ -32,6 +32,8 @@ module Tlog
 end
 
 require "chronic_duration"
+require 'fileutils'
+require 'git'
 
 require 'tlog/command'
 require 'tlog/command/test'

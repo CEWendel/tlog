@@ -51,18 +51,25 @@ class Tlog::Storage::Disk
 	end
 
 	def create_log(log)
-		path = log_path(log.name)
-		unless Dir.exists?(path)
-			FileUtils.mkdir_p(path)
-			log_storage.log_path = path
-			puts "log.goal is #{log.goal}"
-			log_storage.update_head(log.goal)
+		log.path = log_path(log.name)
+		if log.create
 			git.add
 			git.commit("Created log #{log.name}")
 			true
 		else
 			false
 		end
+		#unless Dir.exists?(path)
+		#	FileUtils.mkdir_p(path)
+		#	#log_storage.log_path = path
+		#	puts "log.goal is #{log.goal}"
+		#	#log_storage.update_head(log.goal)
+		#	git.add
+		#	git.commit("Created log #{log.name}")
+		#	true
+		#else
+		#	false
+		#end
 	end
 
 	def require_log(log_name)
@@ -218,6 +225,7 @@ class Tlog::Storage::Disk
 			log.name = log_path.basename
 			log.entries = log_storage.entries
 			log.goal = log_storage.get_log_length
+			log.path = log_path
 		end
 		return log
 	end
@@ -316,6 +324,10 @@ class Tlog::Storage::Disk
 
 	def log_path(log_name)
 		File.join(logs_path, log_name)
+	end
+
+	def goal_path(log_name)
+		File.join(log_path(log_name), 'GOAL')
 	end
 
 	def logs_path

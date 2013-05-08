@@ -169,6 +169,7 @@ class Tlog::Storage::Task_Store
 		write_file(entry_owner_path, entry.owner) if entry.owner
 	end
 
+	#This should be an instance variable
 	def entry_path
 		File.join(log_path, cur_entry_hash)
 	end
