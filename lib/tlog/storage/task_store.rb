@@ -41,7 +41,7 @@ class Tlog::Storage::Task_Store
 			break unless Dir.exists?(entry_path)
 			cur_entry = entry_for_hash(hash_value)
 			entries.push(cur_entry)
-			hash_value = cur_entry.hash
+			hash_value = cur_entry.hex
 		end until hash_value == "none"
 		return entries
 	end
@@ -49,7 +49,7 @@ class Tlog::Storage::Task_Store
 	def entry_for_hash(hash)
 		cur_entry = Tlog::Task_Entry.new(entry_start_time, entry_end_time,
 			entry_parent_hash, entry_description, entry_owner)
-	end 
+	end
 
 	def get_log_length
 		if File.exists?(head_path)

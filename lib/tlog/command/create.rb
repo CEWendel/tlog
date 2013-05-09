@@ -10,10 +10,9 @@ class Tlog::Command::Create < Tlog::Command
 
 		raise Tlog::Error::CommandInvalid, "Must specify log name" unless input.args[0]
 
-		log = Tlog::Entity::Log.new
+		log = Tlog::Entity::Log.new(nil)
 		log.name = input.args[0];
 		log.goal = ChronicDuration.parse(input.options[:goal]) if input.options[:goal]
-
 		raise Tlog::Error::CommandInvalid, "Could create log: Log already exists" unless create_log(log)
 	end
 

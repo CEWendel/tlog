@@ -33,6 +33,7 @@ class Tlog::Command::Log < Tlog::Command
 	end
 
 	def display_log(log_name, length_threshold, output)
+		log = storage.require_log(log_name)
 		entries = storage.log_entries(log_name)
 		log_length = storage.log_length(log_name)
 		if storage.start_time_string && is_current_log_name?(log_name)
@@ -89,14 +90,24 @@ class Tlog::Command::Log < Tlog::Command
 
 	def print_time_left(log_name, log_length, output)
 		# should just get storage object...
-		if (storage.current_log_name == log_name) && storage.cur_log_length
-			log_length = storage.cur_log_length
+		log = storage.require_log(log_name)
+		if log.goal
+			# if log.goal
+			# 	output.line_red("\tTime left: %39s" % seconds_format.duration(log.goal)) 
+			# end
+			log_goal = log.goal
+			if (storage.current_log_name == log_name)
+				current_time = Time.now - storage.cur_start_time
+				log_goal -= current_time.to_i
+			end
+			#log_length = update_log_length(log_length) if storage.time_since_start
+			log_goal = 0 if log_goal < 0
+			output.line_red("\tTime left: %39s" % seconds_format.duration(log_goal)) 
 		end
-		log_length = update_log_length(log_length) if storage.time_since_start
-		if log_length
-			log_length = 0 if log_length < 0
-			output.line_red("\tTime left: %39s" % seconds_format.duration(log_length)) if log_length
-		end
+		# if log_length
+		# 	log_length = 0 if log_length < 0
+		# 	output.line_red("\tTime left: %39s" % seconds_format.duration(log_length)) if log_length
+		# end
 	end
 
 	#should be added to entries array, not its own seperate thing

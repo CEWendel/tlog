@@ -73,6 +73,32 @@ class Tlog::Storage::Disk
 		# end
 	end
 
+	def delete_log(log)
+		log.path = log_path(log.name)
+		if log.delete
+			delete_current(log.name)
+			puts "log path is #{log.path}"
+			git.remove(log.path, {:recursive => "-r"})
+			git.commit("Deleted log #{log.name}")
+			true
+		else
+			false
+		end
+		# if Dir.exists?(log_path(log_name))
+		# 	stop_log(log_name)
+		# 	all_log_dirs.each do |log_path|
+		# 		log_basename = log_path.basename.to_s
+		# 		if log_basename == log_name
+		# 			FileUtils.rm_rf(log_path) if log_basename == log_name 
+		# 			git.remove(log_path, {:recursive => "-r"})
+		# 			git.commit("Deleted log #{log_name}")
+		# 		end
+		# 	end
+		# else
+		# 	false
+		# end
+	end
+
 	def require_log(log_name)
 		decode_log_path(Pathname.new(log_path(log_name)))
 	end
@@ -80,7 +106,7 @@ class Tlog::Storage::Disk
 	def start_log(log, entry_description)
 		puts "entry_description is #{entry_description}"
 		entry_description = '(no description)' unless entry_description
-		if update_current(log, entry_description)
+		if update_current(log.name, entry_description)
 			create_log(log) # Creates directory if it has not already been created
 			git.add
 			git.commit("Started log #{log.name}")
@@ -89,33 +115,32 @@ class Tlog::Storage::Disk
 			false
 		end
 	end
-
-	def stop_log(log_name)
-		log_name = current_log_name unless log_name
-		if stop_current
-			delete_current(log_name)
-			git.add
-			git.commit("Stopped log #{log_name}")
-			true
+	# def create_log_entry(name, start_time, log_description)
+	# 	new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description, cur_entry_owner)
+	# 	update_log_storage(log_path(name), new_entry)
+	# 	puts "name is #{name}"
+	# 	puts "log path is #{log_path(name)}"
+	# 	log_storage.create_entry
+	# end
+	def stop_log(log)
+		if Dir.exists?(current_path)
+			current_hash = { "name" => current_log_name,
+				"start_time" => current_start_time,
+				"description" => current_entry_description,
+				"owner" => cur_entry_owner
+			}
+			log.create_entry(current_hash)
 		else
 			false
 		end
-	end
-
-	def delete_log(log_name)
-		if Dir.exists?(log_path(log_name))
-			stop_log(log_name)
-			all_log_dirs.each do |log_path|
-				log_basename = log_path.basename.to_s
-				if log_basename == log_name
-					FileUtils.rm_rf(log_path) if log_basename == log_name 
-					git.remove(log_path, {:recursive => "-r"})
-					git.commit("Deleted log #{log_name}")
-				end
-			end
-		else
-			false
-		end
+		# if stop_current
+		# 	delete_current(log_name)
+		# 	git.add
+		# 	git.commit("Stopped log #{log_name}")
+		# 	true
+		# else
+		# 	false
+		# end
 	end
 
 	def log_entries(log_name)
@@ -168,12 +193,16 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def cur_log_length
-		if current_log_length
-			current_log_length.to_i
-		else
-			nil
-		end
+	# def cur_log_length
+	# 	if current_log_length
+	# 		current_log_length.to_i
+	# 	else
+	# 		nil
+	# 	end
+	# end
+
+	def cur_start_time
+		Time.parse(current_start_time) if current_start_path
 	end
 
 	def cur_entry_owner
@@ -221,12 +250,9 @@ class Tlog::Storage::Disk
 
 	def decode_log_path(log_path)
 		if Dir.exists?(log_path)
-			log = Tlog::Entity::Log.new
-			log_storage.log_path = log_path
-			log.name = log_path.basename
+			log = Tlog::Entity::Log.new(log_path)
+			log_storage.log_path = log_path # add this to the log class...i think task_store may not be neccessary
 			log.entries = log_storage.entries
-			log.goal = log_storage.get_log_length
-			log.path = log_path
 		end
 		return log
 	end
@@ -241,12 +267,12 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def update_current(log, entry_description)
+	def update_current(log_name, entry_description)
 		puts "update_current called, log name is #{log.name}"
 		puts "filename for current is #{current_path}"
 		unless Dir.exists?(current_path)
 			FileUtils.mkdir_p(current_path)
-			write_to_current(log, entry_description)
+			write_to_current(log_name, entry_description)
 			true
 		else
 			false
@@ -265,10 +291,10 @@ class Tlog::Storage::Disk
 		end
 	end	
 
-	def write_to_current(log, entry_description)
+	def write_to_current(log_name, entry_description)
 		puts "entry_description is #{entry_description}"
 		# Create a current object, with a "read" method
-		File.open(current_name_path, 'w'){ |f| f.write(log.name)} 
+		File.open(current_name_path, 'w'){ |f| f.write(log_name)} 
 		File.open(current_description_path, 'w'){ |f| f.write(entry_description)} if entry_description
 		#File.open(current_length_path, 'w') { |f| f.write(log_length)} if log_length
 		File.open(current_start_path, 'w'){ |f| f.write(Time.now.to_s)} 
@@ -281,7 +307,7 @@ class Tlog::Storage::Disk
 	def stop_current
 		if Dir.exists?(current_path)
 			puts "current_entry_description is #{current_entry_description}"
-			create_log_entry(current_log_name, current_start_time, current_entry_description) # CURRENT OBJECT!
+			create_log_entry(current_log_name, current_start_time, current_entry_description) # CURRENT Dictionary?!
 			true
 		else
 			false

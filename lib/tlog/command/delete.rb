@@ -16,9 +16,10 @@ class Tlog::Command::Delete < Tlog::Command
 
 	private
 
-	def delete(tlog_name)
+	def delete(log_name)
 		storage.in_branch do |wd|
-			storage.delete_log(tlog_name)
+			log = storage.require_log(log_name)
+			storage.delete_log(log) if log
 		end
 	end
 
