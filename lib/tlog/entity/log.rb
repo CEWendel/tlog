@@ -17,8 +17,8 @@ class Tlog::Entity::Log
 
 	def create
 		unless Dir.exists?(@path)
-			FileUtils.mkdir_p(@path)
 			File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
+			FileUtils.mkdir_p(@path)
 		end
 	end
 
