@@ -125,9 +125,9 @@ class Tlog::Storage::Disk
 	def stop_log(log)
 		if Dir.exists?(current_path)
 			current_hash = { "name" => current_log_name,
-				"start_time" => current_start_time,
-				"description" => current_entry_description,
-				"owner" => cur_entry_owner
+				:start_time => current_start_time,
+				:description => current_entry_description,
+				:owner => cur_entry_owner
 			}
 			log.create_entry(current_hash)
 		else

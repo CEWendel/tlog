@@ -23,7 +23,7 @@ class Tlog::Entity::Log
 	end
 
 	def create_entry(current)
-		new_entry = Tlog::Task_Entry.new(Time.parse(current["start_time"]), Time.new, nil, current["description"], current["owner"])
+		new_entry = Tlog::Task_Entry.new(Time.parse(current[:start_time]), Time.new, nil, current[:description], current[:owner])
 		entry_hex = generate_random_hex
 
 		update_head(entry_hex)
