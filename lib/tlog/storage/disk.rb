@@ -130,6 +130,7 @@ class Tlog::Storage::Disk
 				:description => current_entry_description,
 				:owner => cur_entry_owner
 			}
+			delete_current(current_hash[:name])
 			log.create_entry(current_hash)
 		else
 			false

@@ -17,21 +17,22 @@ class Tlog::Entity::Log
 
 	def create
 		unless Dir.exists?(@path)
-			File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
 			FileUtils.mkdir_p(@path)
+			File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
+			true
 		end
 	end
 
 	def create_entry(current)
 		new_entry = Tlog::Task_Entry.new(Time.parse(current[:start_time]), Time.new, nil, current[:description], current[:owner])
 		entry_hex = generate_random_hex
+		head_hex_value ? parent_hex = head_hex_value : parent_hex = "none"
 
 		update_head(entry_hex)
-		update_goal(new_entry.length)
+		update_goal(new_entry.length) if goal_length
 
 		new_entry.path = entry_path(entry_hex)
 		new_entry.hex = entry_hex # don't need this, just get name of directory
-		head_hex_value ? parent_hex = head_hex_value : parent_hex = "none"
 		new_entry.create(parent_hex)
 	end
 
