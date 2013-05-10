@@ -107,6 +107,7 @@ class Tlog::Storage::Disk
 		puts "entry_description is #{entry_description}"
 		entry_description = '(no description)' unless entry_description
 		if update_current(log.name, entry_description)
+			puts "here2"
 			create_log(log) # Creates directory if it has not already been created
 			git.add
 			git.commit("Started log #{log.name}")
@@ -124,7 +125,7 @@ class Tlog::Storage::Disk
 	# end
 	def stop_log(log)
 		if Dir.exists?(current_path)
-			current_hash = { "name" => current_log_name,
+			current_hash = { :name => current_log_name,
 				:start_time => current_start_time,
 				:description => current_entry_description,
 				:owner => cur_entry_owner
@@ -268,7 +269,7 @@ class Tlog::Storage::Disk
 	end
 
 	def update_current(log_name, entry_description)
-		puts "update_current called, log name is #{log.name}"
+		puts "update_current called, log name is #{log_name}"
 		puts "filename for current is #{current_path}"
 		unless Dir.exists?(current_path)
 			FileUtils.mkdir_p(current_path)
