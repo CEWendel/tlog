@@ -34,17 +34,23 @@ class Tlog::Command::Log < Tlog::Command
 
 	def display_log(log_name, length_threshold, output)
 		log = storage.require_log(log_name)
-		entries = storage.log_entries(log_name)
-		log_length = storage.log_length(log_name)
+		#entries = storage.log_entries(log_name)
+		#log_length = storage.log_length(log_name)
+
+		#log_length = log.goal
+		log_length = log.goal_length
+		puts "hey2"
+		entries = log.entries
 		if storage.start_time_string && is_current_log_name?(log_name)
 			start_time = Time.parse(storage.start_time_string)
 		end
 		return if length_exceeds_threshold?(log_length, length_threshold)
 		print_log_name(log_name, output)
+		puts "hey"
 		print_header(output)
 		print_current(log_name, log_length, start_time, output)
 		display_entries(entries, output) if entries
-		print_footer(log_name, log_length, output)
+		print_footer(log, log_length, output)
 	end
 
 	def display_all(length_threshold, output)
@@ -58,8 +64,8 @@ class Tlog::Command::Log < Tlog::Command
 		if entries.size > 0
 			entries.each do |entry|
 				out_str = "\t%-4s   %16s  %14s   %14s       %s" % [
-					date_time_format.timestamp(entry.start_time),
-					date_time_format.timestamp(entry.end_time),
+					date_time_format.timestamp(entry.time[:start]),
+					date_time_format.timestamp(entry.time[:end]),
 					seconds_format.duration(entry.length.to_s),
 					entry.owner,
 					entry.description,
@@ -69,34 +75,37 @@ class Tlog::Command::Log < Tlog::Command
 		end
 	end
 
-	def print_footer(log_name, log_length, output)
+	def print_footer(log, log_length, output)
 		output.line "-" * 100
-		print_total(log_name, output)
-		print_time_left(log_name, log_length, output)
+		print_total(log, output)
+		print_time_left(log, output)
 	end
 
 	def print_header(output)
 		output.line("\tStart               End                    Duration        Owner          Description")
 	end 
 
-	def print_total(log_name, output)
+	def print_total(log, output)
 		#output.line("-") * 52
-		output.line("\tTotal%45s " % seconds_format.duration(storage.log_duration(log_name)))
+		duration = log.duration
+		if storage.current_log_name == log.name
+			duration += storage.time_since_start
+		end
+		output.line("\tTotal%45s " % seconds_format.duration(duration))
 	end
 
 	def print_log_name(log_name, output)
 		output.line_yellow("Log: #{log_name}")
 	end
 
-	def print_time_left(log_name, log_length, output)
+	def print_time_left(log, output)
 		# should just get storage object...
-		log = storage.require_log(log_name)
 		if log.goal
 			# if log.goal
 			# 	output.line_red("\tTime left: %39s" % seconds_format.duration(log.goal)) 
 			# end
 			log_goal = log.goal
-			if (storage.current_log_name == log_name)
+			if (storage.current_log_name == log.name)
 				current_time = Time.now - storage.cur_start_time
 				log_goal -= current_time.to_i
 			end

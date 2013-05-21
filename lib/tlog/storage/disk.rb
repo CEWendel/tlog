@@ -12,7 +12,6 @@ class Tlog::Storage::Disk
 	attr_accessor :tlog_working
 	attr_accessor :tlog_index
 	attr_accessor :working_dir
-	attr_accessor :log_storage
 
 	# Class methods 'create_repo' 'all_logs', also 'create' command
 
@@ -30,24 +29,22 @@ class Tlog::Storage::Disk
 		unless(bs.include?('tlog') && File.directory?(@tlog_working))
 			init_tlog_branch(bs.include?('tlog'))
 		end
-
-		@log_storage = Tlog::Storage::Task_Store.new
 	end
 
 	def read_logs
-		all_logs = []
-		all_log_dirs.each do |log_path|
-			log = Tlog::Entity::Log.new
-			log_storage.log_path = log_path
-			log.name = log_path.basename
-			puts "log name is #{log.name}"
-			log.entries = log_storage.entries
-			puts "log entries are #{log.entries}"
-			log.goal = log_storage.get_log_length
-			puts "log goal is #{log.goal}"
-			all_logs.push(log)
-		end
-		all_logs
+		# all_logs = []
+		# all_log_dirs.each do |log_path|
+		# 	log = Tlog::Entity::Log.new
+		# 	log_storage.log_path = log_path
+		# 	log.name = log_path.basename
+		# 	puts "log name is #{log.name}"
+		# 	log.entries = log_storage.entries
+		# 	puts "log entries are #{log.entries}"
+		# 	log.goal = log_storage.get_log_length
+		# 	puts "log goal is #{log.goal}"
+		# 	all_logs.push(log)
+		# end
+		# all_logs
 	end
 
 	def create_log(log)
@@ -125,13 +122,17 @@ class Tlog::Storage::Disk
 	# end
 	def stop_log(log)
 		if Dir.exists?(current_path)
-			current_hash = { :name => current_log_name,
+			current_hash = { 
+				:name => current_log_name,
 				:start_time => current_start_time,
 				:description => current_entry_description,
 				:owner => cur_entry_owner
 			}
 			delete_current(current_hash[:name])
-			log.create_entry(current_hash)
+			log.add_entry(current_hash)
+			git.add
+			git.commit("Stopped log #{log.name}")
+			true
 		else
 			false
 		end
@@ -143,24 +144,6 @@ class Tlog::Storage::Disk
 		# else
 		# 	false
 		# end
-	end
-
-	def log_entries(log_name)
-		if log_path(log_name)
-			log_storage.log_path = log_path(log_name) # Reallly should be log_storage.path...
-			log_storage.entries # pass in log path with this?...
-		else
-			nil
-		end
-	end
-
-	def log_length(log_name) # change to goal
-		if log_path(log_name)
-			log_storage.log_path = log_path(log_name)
-			log_storage.get_log_length
-		else
-			nil
-		end
 	end
 
 	def log_duration(log_name)
@@ -253,8 +236,8 @@ class Tlog::Storage::Disk
 	def decode_log_path(log_path)
 		if Dir.exists?(log_path)
 			log = Tlog::Entity::Log.new(log_path)
-			log_storage.log_path = log_path # add this to the log class...i think task_store may not be neccessary
-			log.entries = log_storage.entries
+			#log_storage.log_path = log_path # add this to the log class...i think task_store may not be neccessary
+			#lgolog.entries = log_storage.entries
 		end
 		return log
 	end
@@ -336,19 +319,6 @@ class Tlog::Storage::Disk
 		else
 			nil
 		end
-	end
-
-	def create_log_entry(name, start_time, log_description)
-		new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description, cur_entry_owner)
-		update_log_storage(log_path(name), new_entry)
-		puts "name is #{name}"
-		puts "log path is #{log_path(name)}"
-		log_storage.create_entry
-	end
-
-	def update_log_storage(log_path, log_entry)
-		log_storage.log_path = log_path
-		log_storage.entry = log_entry
 	end
 
 	def log_path(log_name)

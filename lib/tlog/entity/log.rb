@@ -9,10 +9,39 @@ class Tlog::Entity::Log
 	def initialize(log_path)
 		@entries = []
 		if log_path
-			@name = log_path.basename
+			@name = log_path.basename.to_s
 			@path = log_path
 			@goal = goal_length
 		end
+	end
+
+	def goal_length
+		if File.exists?(goal_path)
+			contents = File.read(goal_path)
+			contents.strip
+			contents.to_i
+		end
+	end
+	
+
+	def entries
+		log_entries = []
+		hex_value = head_hex_value
+		return log_entries unless hex_value
+		begin
+			entry = Tlog::Task_Entry.new(entry_path(hex_value), hex_value)
+			hex_value = entry.parent_hex
+			log_entries.push(entry)
+		end until hex_value == "none"
+		return log_entries
+	end
+
+	def duration
+		dur = 0
+		entries.each do |entry|
+			dur += entry.length
+		end
+		dur
 	end
 
 	def create
@@ -23,17 +52,14 @@ class Tlog::Entity::Log
 		end
 	end
 
-	def create_entry(current)
-		new_entry = Tlog::Task_Entry.new(Time.parse(current[:start_time]), Time.new, nil, current[:description], current[:owner])
+	def add_entry(current)
 		entry_hex = generate_random_hex
+		new_entry = Tlog::Task_Entry.new(entry_path(entry_hex), entry_hex)
 		head_hex_value ? parent_hex = head_hex_value : parent_hex = "none"
 
 		update_head(entry_hex)
 		update_goal(new_entry.length) if goal_length
-
-		new_entry.path = entry_path(entry_hex)
-		new_entry.hex = entry_hex # don't need this, just get name of directory
-		new_entry.create(parent_hex)
+		new_entry.create(parent_hex, current)
 	end
 
 	def update_head(entry_hex)
@@ -61,14 +87,6 @@ class Tlog::Entity::Log
 		end
 	end
 
-	def goal_length
-		if File.exists?(goal_path)
-			contents = File.read(goal_path)
-			contents.strip
-			contents.to_i
-		end
-	end
-	
 	def goal_path
 		File.join(@path, 'GOAL')
 	end
