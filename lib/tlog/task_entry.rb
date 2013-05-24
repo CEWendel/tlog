@@ -1,28 +1,14 @@
 # Should be renamed to "Entry"
 class Tlog::Task_Entry
 
-	attr_accessor :start_time
-	attr_accessor :end_time
 	attr_accessor :length
 	attr_accessor :hex
-	attr_accessor :description
-	attr_accessor :owner
 	attr_accessor :path
 
-	# Should just take hex value
 	def initialize(path, hex)
 		@path = path
 		@hex = hex 
 		@length = reset_length
-		# @start_time = time[:start]
-		# @end_time = time[:end]
-		# @description = description
-		# @start_time = start_time
-		# @end_time = end_time
-		# @hex = hex 
-		# @description = description
-		# @owner = owner
-		# reset_length
 	end
 
 	def reset_length
