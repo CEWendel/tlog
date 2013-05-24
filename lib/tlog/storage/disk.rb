@@ -31,22 +31,6 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def read_logs
-		# all_logs = []
-		# all_log_dirs.each do |log_path|
-		# 	log = Tlog::Entity::Log.new
-		# 	log_storage.log_path = log_path
-		# 	log.name = log_path.basename
-		# 	puts "log name is #{log.name}"
-		# 	log.entries = log_storage.entries
-		# 	puts "log entries are #{log.entries}"
-		# 	log.goal = log_storage.get_log_length
-		# 	puts "log goal is #{log.goal}"
-		# 	all_logs.push(log)
-		# end
-		# all_logs
-	end
-
 	def create_log(log)
 		log.path = log_path(log.name)
 		if log.create
@@ -56,18 +40,6 @@ class Tlog::Storage::Disk
 		else
 			false
 		end
-		# path = log_path(log.name)
-		# unless Dir.exists?(path)
-		# 	FileUtils.mkdir_p(path)
-		# 	#log_storage.log_path = path
-		# 	puts "log.goal is #{log.goal}"
-		# 	#log_storage.update_head(log.goal)
-		# 	git.add
-		# 	git.commit("Created log #{log.name}")
-		# 	true
-		# else
-		# 	false
-		# end
 	end
 
 	def delete_log(log)
@@ -81,19 +53,6 @@ class Tlog::Storage::Disk
 		else
 			false
 		end
-		# if Dir.exists?(log_path(log_name))
-		# 	stop_log(log_name)
-		# 	all_log_dirs.each do |log_path|
-		# 		log_basename = log_path.basename.to_s
-		# 		if log_basename == log_name
-		# 			FileUtils.rm_rf(log_path) if log_basename == log_name 
-		# 			git.remove(log_path, {:recursive => "-r"})
-		# 			git.commit("Deleted log #{log_name}")
-		# 		end
-		# 	end
-		# else
-		# 	false
-		# end
 	end
 
 	def require_log(log_name)
@@ -113,13 +72,7 @@ class Tlog::Storage::Disk
 			false
 		end
 	end
-	# def create_log_entry(name, start_time, log_description)
-	# 	new_entry = Tlog::Task_Entry.new(Time.parse(start_time),Time.new, nil, log_description, cur_entry_owner)
-	# 	update_log_storage(log_path(name), new_entry)
-	# 	puts "name is #{name}"
-	# 	puts "log path is #{log_path(name)}"
-	# 	log_storage.create_entry
-	# end
+
 	def stop_log(log)
 		if Dir.exists?(current_path)
 			current_hash = { 
@@ -136,14 +89,6 @@ class Tlog::Storage::Disk
 		else
 			false
 		end
-		# if stop_current
-		# 	delete_current(log_name)
-		# 	git.add
-		# 	git.commit("Stopped log #{log_name}")
-		# 	true
-		# else
-		# 	false
-		# end
 	end
 
 	def log_duration(log_name)
@@ -177,14 +122,6 @@ class Tlog::Storage::Disk
 			nil
 		end
 	end
-
-	# def cur_log_length
-	# 	if current_log_length
-	# 		current_log_length.to_i
-	# 	else
-	# 		nil
-	# 	end
-	# end
 
 	def cur_start_time
 		Time.parse(current_start_time) if current_start_path
