@@ -1,5 +1,4 @@
-require 'chronic_duration'
-require 'time'
+
 class Tlog::Command::Log < Tlog::Command
 
 	def name
@@ -39,14 +38,12 @@ class Tlog::Command::Log < Tlog::Command
 
 		#log_length = log.goal
 		log_length = log.goal_length
-		puts "hey2"
 		entries = log.entries
 		if storage.start_time_string && is_current_log_name?(log_name)
 			start_time = Time.parse(storage.start_time_string)
 		end
 		return if length_exceeds_threshold?(log_length, length_threshold)
 		print_log_name(log_name, output)
-		puts "hey"
 		print_header(output)
 		print_current(log_name, log_length, start_time, output)
 		display_entries(entries, output) if entries

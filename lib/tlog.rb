@@ -1,19 +1,3 @@
-#class Tlog
-#  def self.hi(language = :english)
-#    translator = Translator.new(language)
-#   translator.hi
-#  end
-#end
-
-
-=begin
-class Tlog 
-  def self.hi(language = :english)
-    translator = Translator.new(language)
-    translator.hi
-  end
-end
-=end
 
 module Tlog
 	Version = "0.0.0"
@@ -34,6 +18,10 @@ end
 require "chronic_duration"
 require 'fileutils'
 require 'git'
+require 'securerandom'
+require 'pathname'
+require 'time'
+require 'chronic'
 
 require 'tlog/command'
 require 'tlog/command/test'
@@ -56,7 +44,7 @@ require 'tlog/format/seconds'
 require 'tlog/format/date_time'
 
 require 'tlog/entity/log'
-
+require 'tlog/entity/active_log'
 
 require 'tlog/error'
 

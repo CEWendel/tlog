@@ -1,9 +1,3 @@
-require 'fileutils'
-require 'securerandom'
-require 'pathname'
-require 'time'
-require 'chronic'
-require 'git'
 
 class Tlog::Storage::Disk
 
