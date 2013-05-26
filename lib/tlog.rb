@@ -35,8 +35,6 @@ require 'tlog/command/create'
 
 require 'tlog/task'
 
-require 'tlog/task_entry'
-
 require 'tlog/storage/disk'
 require 'tlog/storage/task_store'
 
@@ -45,6 +43,7 @@ require 'tlog/format/date_time'
 
 require 'tlog/entity/log'
 require 'tlog/entity/active_log'
+require 'tlog/entity/task_entry'
 
 require 'tlog/error'
 
