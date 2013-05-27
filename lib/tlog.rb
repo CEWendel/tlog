@@ -40,7 +40,7 @@ require 'tlog/format/date_time'
 
 require 'tlog/entity/log'
 require 'tlog/entity/active_log'
-require 'tlog/entity/task_entry'
+require 'tlog/entity/entry'
 
 require 'tlog/error'
 
