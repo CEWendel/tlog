@@ -33,7 +33,6 @@ class Tlog::Task_Entry
 		time_contents = read_file(time_path)
 		return time_hash unless time_contents
 		split_contents = time_contents.split(" ", 6)
-		#puts "split_contents are #{split_contents}"
 		for i in 0..2
 			start_time_string += split_contents[i] + " "
 		end

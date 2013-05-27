@@ -6,8 +6,6 @@ class Tlog::Command::Log < Tlog::Command
 	end
 
 	def execute(input, output)
-		output.line("Execute on log command")
-
 		raise Tlog::Error::CommandInvalid, "Logging invalid" unless display(input.args[0], input.options[:length], output)
 	end
 

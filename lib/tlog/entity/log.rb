@@ -6,7 +6,7 @@ class Tlog::Entity::Log
 	attr_accessor :entries
 	attr_accessor :path
 
-	def initialize(log_path)
+	def initialize(log_path = nil)
 		@entries = []
 		if log_path
 			@name = log_path.basename.to_s

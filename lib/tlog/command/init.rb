@@ -6,7 +6,6 @@ class Tlog::Command::Init < Tlog::Command
 	end
 
 	def execute(input,output)
-		output.line("execute on init called")
 		if input.args[0].nil?
 			raise Tlog::Error::CommandInvalid, "Project already initialized" unless @storage.init_project
 		else

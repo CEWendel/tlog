@@ -6,14 +6,12 @@ class Tlog::Command::Create < Tlog::Command
 	end
 
 	def execute(input, output)
-		output.line("execute on create command");
-
 		raise Tlog::Error::CommandInvalid, "Must specify log name" unless input.args[0]
 
-		log = Tlog::Entity::Log.new(nil)
+		log = Tlog::Entity::Log.new
 		log.name = input.args[0];
 		log.goal = ChronicDuration.parse(input.options[:goal]) if input.options[:goal]
-		raise Tlog::Error::CommandInvalid, "Could create log: Log already exists" unless create_log(log)
+		raise Tlog::Error::CommandNotFound, "Could create log: Log already exists" unless create_log(log)
 	end
 
 	def options(parser, options)
