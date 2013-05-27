@@ -1,4 +1,3 @@
-require "chronic_duration"
 
 class Tlog::Command::Start < Tlog::Command
 

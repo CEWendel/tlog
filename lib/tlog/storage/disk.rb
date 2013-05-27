@@ -40,7 +40,6 @@ class Tlog::Storage::Disk
 		log.path = log_path(log.name)
 		if log.delete
 			delete_current(log.name)
-			puts "log path is #{log.path}"
 			git.remove(log.path, {:recursive => "-r"})
 			git.commit("Deleted log #{log.name}")
 			true
@@ -54,10 +53,8 @@ class Tlog::Storage::Disk
 	end
 
 	def start_log(log, entry_description)
-		puts "entry_description is #{entry_description}"
 		entry_description = '(no description)' unless entry_description
 		if update_current(log.name, entry_description)
-			puts "here2"
 			create_log(log) # Creates directory if it has not already been created
 			git.add
 			git.commit("Started log #{log.name}")
@@ -175,7 +172,6 @@ class Tlog::Storage::Disk
 
 	def init_tlog_branch(tlog_branch = false)
 		in_branch(tlog_branch) do
-			#File.open('.hold', 'w+'){|f| f.puts('hold')}
 			unless tlog_branch
 				git.add
 				git.commit('creating the tlog branch')
@@ -184,8 +180,6 @@ class Tlog::Storage::Disk
 	end
 
 	def update_current(log_name, entry_description)
-		puts "update_current called, log name is #{log_name}"
-		puts "filename for current is #{current_path}"
 		unless Dir.exists?(current_path)
 			FileUtils.mkdir_p(current_path)
 			write_to_current(log_name, entry_description)
@@ -196,7 +190,6 @@ class Tlog::Storage::Disk
 	end
 
 	def delete_current(log_name) # Change this method name or add one
-		puts "delete_current called, log name is #{log_name}"
 		if Dir.exists?(current_path)
 			if current_log_name == log_name
 				FileUtils.rm_rf(current_path)
@@ -208,11 +201,9 @@ class Tlog::Storage::Disk
 	end	
 
 	def write_to_current(log_name, entry_description)
-		puts "entry_description is #{entry_description}"
 		# Create a current object, with a "read" method
 		File.open(current_name_path, 'w'){ |f| f.write(log_name)} 
 		File.open(current_description_path, 'w'){ |f| f.write(entry_description)} if entry_description
-		#File.open(current_length_path, 'w') { |f| f.write(log_length)} if log_length
 		File.open(current_start_path, 'w'){ |f| f.write(Time.now.to_s)} 
 	end
 
@@ -222,7 +213,6 @@ class Tlog::Storage::Disk
 
 	def stop_current
 		if Dir.exists?(current_path)
-			puts "current_entry_description is #{current_entry_description}"
 			create_log_entry(current_log_name, current_start_time, current_entry_description) # CURRENT Dictionary?!
 			true
 		else

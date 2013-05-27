@@ -29,7 +29,7 @@ class Tlog::Entity::Log
 		hex_value = head_hex_value
 		return log_entries unless hex_value
 		begin
-			entry = Tlog::Task_Entry.new(entry_path(hex_value), hex_value)
+			entry = Tlog::Entity::Entry.new(entry_path(hex_value), hex_value)
 			hex_value = entry.parent_hex
 			log_entries.push(entry)
 		end until hex_value == "none"
@@ -54,7 +54,7 @@ class Tlog::Entity::Log
 
 	def add_entry(current)
 		entry_hex = generate_random_hex
-		new_entry = Tlog::Task_Entry.new(entry_path(entry_hex), entry_hex)
+		new_entry = Tlog::Entity::Entry.new(entry_path(entry_hex), entry_hex)
 		head_hex_value ? parent_hex = head_hex_value : parent_hex = "none"
 
 		update_head(entry_hex)
@@ -67,10 +67,7 @@ class Tlog::Entity::Log
 	end
 
 	def update_goal(entry_length)
-		puts "entry_length is #{entry_length}"
-		puts "goal length is #{goal_length}"
 		new_length = goal_length - entry_length
-		puts "new length is #{new_length}"
 		File.open(goal_path, 'w'){|f| f.write(new_length)}
 	end
 

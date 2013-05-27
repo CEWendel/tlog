@@ -1,5 +1,5 @@
 # Should be renamed to "Entry"
-class Tlog::Task_Entry
+class Tlog::Entity::Entry
 
 	attr_accessor :hex
 	attr_accessor :path
