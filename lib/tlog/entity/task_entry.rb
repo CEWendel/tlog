@@ -1,19 +1,16 @@
 # Should be renamed to "Entry"
 class Tlog::Task_Entry
 
-	attr_accessor :length
 	attr_accessor :hex
 	attr_accessor :path
 
 	def initialize(path, hex)
 		@path = path
 		@hex = hex 
-		@length = reset_length
 	end
 
-	def reset_length
-		time_hash = time
-		@length = time_difference if time_hash[:start] && time_hash[:end]
+	def length
+		time_difference if time[:start] && time[:end]
 	end
 
 	def create(parent, current)

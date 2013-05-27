@@ -58,8 +58,8 @@ class Tlog::Entity::Log
 		head_hex_value ? parent_hex = head_hex_value : parent_hex = "none"
 
 		update_head(entry_hex)
-		update_goal(new_entry.length) if goal_length
 		new_entry.create(parent_hex, current)
+		update_goal(new_entry.length) if goal_length
 	end
 
 	def update_head(entry_hex)
