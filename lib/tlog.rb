@@ -16,7 +16,6 @@ module Tlog
 end
 
 require "chronic_duration"
-require 'fileutils'
 require 'git'
 require 'securerandom'
 require 'pathname'
