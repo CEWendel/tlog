@@ -4,14 +4,6 @@ tlog
 CLI time tracking tool
 
 ##TODO
+- write a read me lol
 
-Funcitonality
-1) Sort entries for log, most current first
-
-1) Change log to list
-2) Change output for list
-3) --help, feedback for all commands
-4) Clean up code
-5) Test collaboration
-6) Use dicitonaries
 
