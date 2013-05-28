@@ -33,13 +33,12 @@ class Tlog::Application
 	def all_commands
 		storage = working_dir_storage
 		commands = [
-			Tlog::Command::Test.new,
 			Tlog::Command::Init.new,
 			Tlog::Command::Start.new,
 			Tlog::Command::Stop.new,
 			Tlog::Command::Active.new,
 			Tlog::Command::Delete.new,
-			Tlog::Command::Log.new,
+			Tlog::Command::Display.new,
 			Tlog::Command::Create.new,
 		]
 		commands.each do |command|
