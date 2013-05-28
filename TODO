@@ -1,3 +1,5 @@
 -Pause command: You can pause a the current entry in a specific time log. Use case: I'm working on a time log, want to pause the entry I'm working on, commit, push to my coworker who can resume the entry and finish it or whatever
 -tlog stop should figure out what the time log the last entry was on
+-tests
+-rakefile
 -time zones....
