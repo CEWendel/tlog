@@ -1,4 +1,4 @@
-# Should be renamed to "Entry"
+
 class Tlog::Entity::Entry
 
 	attr_accessor :hex
