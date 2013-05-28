@@ -47,6 +47,7 @@ class Tlog::Entity::Log
 	def create
 		unless Dir.exists?(@path)
 			FileUtils.mkdir_p(@path)
+			File.open(hold_path, 'w+'){|f| f.write('hold')}
 			File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
 			true
 		end
@@ -86,6 +87,10 @@ class Tlog::Entity::Log
 
 	def goal_path
 		File.join(@path, 'GOAL')
+	end
+
+	def hold_path
+		File.join(@path, '.HOLD')
 	end
 
 	def head_path
