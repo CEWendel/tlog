@@ -1,4 +1,4 @@
-require 'colorize'
+
 class Tlog::Output
 
 	attr_accessor :stdout

@@ -22,6 +22,8 @@ require 'securerandom'
 require 'pathname'
 require 'time'
 require 'chronic'
+require "optparse"
+require "colorize"
 
 require 'tlog/command'
 require 'tlog/command/init'

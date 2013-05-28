@@ -1,6 +1,4 @@
 
-require "optparse"
-
 class Tlog::Application
 
 	def initialize(input, output)

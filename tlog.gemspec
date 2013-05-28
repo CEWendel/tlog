@@ -2,7 +2,7 @@
 Gem::Specification.new do |spec|
 
   spec.name         = "tlog"
-  spec.version      = "0.0.1"
+  spec.version      = "0.0.2"
   spec.date         = "2013-05-26"
 
   spec.required_ruby_version = ">=1.9.3"
@@ -16,13 +16,15 @@ Gem::Specification.new do |spec|
   spec.add_dependency("fileutils", "~> 0.7")
   spec.add_dependency("git", "~> 1.2.5")
   spec.add_dependency("chronic", "~> 0.9.1")
-
+  spec.add_dependency("colorize", "~> 0.5.8")
+  
   spec.authors      = ["Chris Wendel"]
   spec.email        = "chriwend@umich.edu"
+  spec.homepage     = "http://rubygems.org/gems/tlog"
 
   spec.executables  = "tlog"
 
-  spec.files        = 'git ls-files'.split("\n")
+  spec.files        = `git ls-files`.split("\n")
   spec.require_path = "lib"
 
 end
