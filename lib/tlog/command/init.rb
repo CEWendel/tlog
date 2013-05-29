@@ -5,6 +5,10 @@ class Tlog::Command::Init < Tlog::Command
 		"init"
 	end
 
+	def description
+		"fuck"
+	end
+
 	def execute(input,output)
 		if input.args[0].nil?
 			raise Tlog::Error::CommandInvalid, "Project already initialized" unless @storage.init_project

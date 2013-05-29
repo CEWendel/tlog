@@ -5,6 +5,10 @@ class Tlog::Command::Display < Tlog::Command
 		"display"
 	end
 
+	def description
+		"displays shit"
+	end 
+
 	def execute(input, output)
 		raise Tlog::Error::CommandInvalid, "Logging invalid" unless display(input.args[0], input.options[:length], output)
 	end

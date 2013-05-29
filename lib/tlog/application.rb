@@ -12,6 +12,7 @@ class Tlog::Application
 		begin
 			command_name = @input.args.shift
 			command = find(command_name)
+			puts command
 			prepare_command(command)
 			outcome = run_command(command)
 		rescue OptionParser::InvalidOption, OptionParser::MissingArgument
@@ -20,42 +21,24 @@ class Tlog::Application
 		rescue Tlog::Error::CommandInvalid
 			@output.error(command_name + " syntax invalid: " + $!.message)
 			@output.error(@optparse.to_s)
-		rescue Tlog::Error::CommandNotFound
-			@output.error(command_name +": " + $!.message) # format class?
+		rescue Tlog::Error::CommandNotFound, OptionParser::MissingArgument
+			@output.error($!)
+			@output.error(@optparse.to_s)
 		rescue
 			@output.error($!)
 		end
 		return outcome
 	end
 
-	def all_commands
-		storage = working_dir_storage
-		commands = [
-			Tlog::Command::Init.new,
-			Tlog::Command::Start.new,
-			Tlog::Command::Stop.new,
-			Tlog::Command::Active.new,
-			Tlog::Command::Delete.new,
-			Tlog::Command::Display.new,
-			Tlog::Command::Create.new,
-		]
-		commands.each do |command|
-			command.storage = storage
-			command.seconds_format = Tlog::Format::Seconds
-			command.date_time_format = Tlog::Format::DateTime
-		end
-		return commands
-	end
-
-
 	private
 
-	def working_dir_storage
-		Tlog::Storage::Disk.new('.')
-	end
-
 	def find(command_name)
-		all_commands.select { |command| command.name == command_name }.first
+		commands = Tlog::Command_Suite.commands
+		command = nil
+		commands.each do |cmd|
+			return cmd if cmd.name == command_name
+		end
+		command
 	end
 
 	def prepare_command(command)
@@ -72,7 +55,7 @@ class Tlog::Application
 			command.execute(@input, @output)
 			true
 		else
-			raise Tlog::Error::CommandNotFound, "Command not found"
+			raise Tlog::Error::CommandNotFound, "Command not found, use 'tlog help' for list of commands"
 		end
 	end
 

@@ -4,6 +4,10 @@ class Tlog::Command::Stop < Tlog::Command
 		"stop"
 	end 
 
+	def description
+		"ends a task for a time log"
+	end
+
 	def execute(input, output)
 		raise Tlog::Error::CommandInvalid, "Must specify log name" unless input.args[0]
 		stop(input.args[0])

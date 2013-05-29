@@ -24,14 +24,16 @@ require 'chronic'
 require "optparse"
 require "colorize"
 
+require 'tlog/command_suite'
+
 require 'tlog/command'
-require 'tlog/command/init'
 require 'tlog/command/start'
 require 'tlog/command/stop'
 require 'tlog/command/active'
 require 'tlog/command/delete'
 require 'tlog/command/display'
 require 'tlog/command/create'
+require 'tlog/command/help'
 
 require 'tlog/storage/disk'
 

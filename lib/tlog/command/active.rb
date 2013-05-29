@@ -4,6 +4,10 @@ class Tlog::Command::Active < Tlog::Command
 		"active"
 	end 
 
+	def description
+		"prints out all active time logs and the current time log, if it exists"
+	end
+
 	def execute(input, output)
 		output.line("execute on active command") #change to out
 		print_time_entry(output)

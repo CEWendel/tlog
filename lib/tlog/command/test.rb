@@ -5,6 +5,10 @@ class Tlog::Command::Test < Tlog::Command
 		"test"
 	end
 
+	def description
+		"lol"
+	end 
+
 	def execute(input,output)
 		output.line("execute on test called")
 		if input.args[0].nil?

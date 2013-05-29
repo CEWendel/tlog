@@ -4,6 +4,10 @@ class Tlog::Command::Delete < Tlog::Command
 		"delete"
 	end
 
+	def description
+		"deletes a time log"
+	end
+
 	def execute(input, output)
 		raise Tlog::Error::CommandInvalid, "Task does not exist" unless delete(input.args[0])
 	end

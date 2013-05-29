@@ -5,6 +5,10 @@ class Tlog::Command::Start < Tlog::Command
 		"start"
 	end 
 
+	def description
+		"starts a new task for a time log"
+	end
+
 	def execute(input, output)
 		raise Tlog::Error::CommandInvalid, "Must specify log name" unless input.args[0]
 		start(input.args[0], input.options[:description])
