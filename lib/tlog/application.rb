@@ -12,7 +12,6 @@ class Tlog::Application
 		begin
 			command_name = @input.args.shift
 			command = find(command_name)
-			puts command
 			prepare_command(command)
 			outcome = run_command(command)
 		rescue OptionParser::InvalidOption, OptionParser::MissingArgument

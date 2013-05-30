@@ -9,7 +9,6 @@ class Tlog::Command::Active < Tlog::Command
 	end
 
 	def execute(input, output)
-		output.line("execute on active command") #change to out
 		print_time_entry(output)
 	end
 
