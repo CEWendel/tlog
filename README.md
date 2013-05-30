@@ -34,6 +34,11 @@ $ tlog stop example
 ### Show active time logs and label the current one, if it exists
 ```bash
 $ tlog active
+All Time Logs:
+testing
+feature1(current)
+bug fix
+feature2
 ```
  
 ### Display all the current time logs and their tasks, total time logged and time left.
@@ -57,6 +62,9 @@ Log: example2
 ```bash
 $ tlog delete example
 ```
+
+## Collaboration
+More to come on this after I test it...
 
 ## Contributing
 
