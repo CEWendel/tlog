@@ -58,6 +58,9 @@ Log: example2
 $ tlog delete example
 ```
 
+## Collaboration
+More to come on this after I test it...
+
 ## Contributing
 
 Please look at the TODO for possible additional features. Use [Github issues](https://github.com/cewendel/tlog/issues) to track bugs and feature requests.
