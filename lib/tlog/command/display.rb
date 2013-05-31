@@ -1,4 +1,5 @@
 
+# I will love whoever re-writes this class (badly needed) 
 class Tlog::Command::Display < Tlog::Command
 
 	def name
@@ -90,7 +91,8 @@ class Tlog::Command::Display < Tlog::Command
 	end
 
 	def print_log_name(log_name, output)
-		output.line_yellow("Log: #{log_name}")
+		out_str = "Log:    #{log_name}\nState:  HEY\nPoint:  5"
+		output.line_yellow(out_str)
 	end
 
 	def print_time_left(log, output)
