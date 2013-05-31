@@ -26,4 +26,8 @@ class Tlog::Output
 		@stdout.puts out.red
 	end
 
+	def line_blue(out)
+		@stdout.puts out.blue
+	end
+
 end

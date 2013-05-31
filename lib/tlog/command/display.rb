@@ -91,7 +91,7 @@ class Tlog::Command::Display < Tlog::Command
 	end
 
 	def print_log_name(log_name, output)
-		out_str = "Log:    #{log_name}\nState:  HEY\nPoint:  5"
+		out_str = "Log:    #{log_name}\nState:  HEY\nPoint:  5\nOwner:  Chris"
 		output.line_yellow(out_str)
 	end
 
