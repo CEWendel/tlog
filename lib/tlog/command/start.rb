@@ -10,12 +10,11 @@ class Tlog::Command::Start < Tlog::Command
 	end
 
 	def execute(input, output)
-		raise Tlog::Error::CommandInvalid, "Must specify log name" unless input.args[0]
 		start(input.args[0], input.options[:description])
 	end
 
 	def options(parser, options)
-		parser.banner = "usage: tlog start <log_name>"
+		parser.banner = "usage: tlog start"
 
     	parser.on("-d", "--description <description>") do |description|
     		options[:description] = description
@@ -26,7 +25,9 @@ class Tlog::Command::Start < Tlog::Command
 
 	def start(log_name, entry_description)
 		storage.in_branch do |wd|
-			log = storage.require_log(log_name)
+			checked_out_log = storage.checkout_value
+			raise Tlog::Error::CheckoutInvalid, "No time log is checked out" unless checked_out_log
+			log = storage.require_log(checked_out_log)
 			raise Tlog::Error::CommandNotFound, "Time log '#{log_name}' does not exist" unless log
 			current_owner = storage.cur_entry_owner
 			storage.start_log(log, entry_description)

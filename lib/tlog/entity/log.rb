@@ -22,7 +22,6 @@ class Tlog::Entity::Log
 			contents.to_i
 		end
 	end
-	
 
 	def entries
 		log_entries = []

@@ -7,8 +7,6 @@ class Tlog::Storage::Disk
 	attr_accessor :tlog_index
 	attr_accessor :working_dir
 
-	# Class methods 'create_repo' 'all_logs', also 'create' command
-
 	def initialize(git_dir)	
 		@git = Git.open(find_repo(git_dir))
 		# Format class?
@@ -25,11 +23,21 @@ class Tlog::Storage::Disk
 		end
 	end
 
+	def checkout_log(log)
+		File.open(checkout_path, 'w'){|f| f.write(log.name)}
+		git.add
+		git.commit("Checking out time log '#{log.name}'")
+	end
+
+	def checkout_value
+		read_file(checkout_path) if File.exists?(checkout_path)
+	end
+
 	def create_log(log)
 		log.path = log_path(log.name)
 		if log.create
 			git.add
-			git.commit("Created log #{log.name}")
+			git.commit("Created log '#{log.name}'")
 			true
 		else
 			false
@@ -41,7 +49,7 @@ class Tlog::Storage::Disk
 		if log.delete
 			delete_current(log.name)
 			git.remove(log.path, {:recursive => "-r"})
-			git.commit("Deleted log #{log.name}")
+			git.commit("Deleted log '#{log.name}'")
 			true
 		else
 			false
@@ -57,7 +65,7 @@ class Tlog::Storage::Disk
 		if update_current(log.name, entry_description)
 			create_log(log) # Creates directory if it has not already been created
 			git.add
-			git.commit("Started log #{log.name}")
+			git.commit("Started log '#{log.name}'")
 			true
 		else
 			false
@@ -75,7 +83,7 @@ class Tlog::Storage::Disk
 			delete_current(current_hash[:name])
 			log.add_entry(current_hash)
 			git.add
-			git.commit("Stopped log #{log.name}")
+			git.commit("Stopped log '#{log.name}'")
 			true
 		else
 			false
@@ -253,6 +261,10 @@ class Tlog::Storage::Disk
 
 	def logs_path
 		File.expand_path(File.join('tasks'))
+	end
+
+	def checkout_path
+		File.join(logs_path, 'CHECKOUT');
 	end
 
 	def current_path

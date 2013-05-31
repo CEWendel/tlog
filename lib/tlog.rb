@@ -34,6 +34,7 @@ require 'tlog/command/delete'
 require 'tlog/command/display'
 require 'tlog/command/create'
 require 'tlog/command/help'
+require 'tlog/command/checkout'
 
 require 'tlog/storage/disk'
 

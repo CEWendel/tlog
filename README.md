@@ -16,6 +16,11 @@ $ sudo gem install tlog
 $ tlog create example 
 ```
 
+### Check out a time log
+```bash
+$ tlog checkout example
+```
+
 ### Create a time log with a time goal
 ```bash
 $ tlog create example --goal 4hr

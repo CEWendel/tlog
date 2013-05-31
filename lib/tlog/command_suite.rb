@@ -13,6 +13,7 @@ class Tlog::Command_Suite
 				Tlog::Command::Delete.new,
 				Tlog::Command::Display.new,
 				Tlog::Command::Create.new,
+				Tlog::Command::Checkout.new
 			]
 			commands.each do |command|
 				command.storage = storage

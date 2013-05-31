@@ -18,7 +18,7 @@ class Tlog::Application
 			@output.error($!)
 			@output.error(@optparse.to_s)
 		rescue Tlog::Error::CommandInvalid
-			@output.error(command_name + " syntax invalid: " + $!.message)
+			@output.error(command_name + " command invalid: " + $!.message)
 			@output.error(@optparse.to_s)
 		rescue Tlog::Error::CommandNotFound, OptionParser::MissingArgument
 			@output.error($!)
