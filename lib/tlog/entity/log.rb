@@ -5,6 +5,9 @@ class Tlog::Entity::Log
 	attr_accessor :goal
 	attr_accessor :entries
 	attr_accessor :path
+	attr_accessor :points
+	attr_accessor :state
+	attr_accessor :owner
 
 	def initialize(log_path = nil)
 		@entries = []
@@ -43,9 +46,14 @@ class Tlog::Entity::Log
 		dur
 	end
 
-	def create
+	def owner
+		read_file(owner_path) if File.exists?(owner_path)
+	end
+
+	def create(current_user)
 		unless Dir.exists?(@path)
 			FileUtils.mkdir_p(@path)
+			File.open(owner_path, 'w'){|f| f.write(current_user)}
 			File.open(hold_path, 'w+'){|f| f.write('hold')}
 			File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
 			true
@@ -77,11 +85,22 @@ class Tlog::Entity::Log
 
 	private
 
+	def read_file(path)
+		if File.exists?(path)
+			contents = File.read(path)
+			contents.strip
+		end
+	end
+
 	def head_hex_value
 		if File.exists?(head_path)
 			head_content = File.read(head_path)
 			head_content.strip if head_content
 		end
+	end
+
+	def owner_path
+		File.join(@path, 'OWNER')
 	end
 
 	def goal_path

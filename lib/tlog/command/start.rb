@@ -29,7 +29,6 @@ class Tlog::Command::Start < Tlog::Command
 			raise Tlog::Error::CheckoutInvalid, "No time log is checked out" unless checked_out_log
 			log = storage.require_log(checked_out_log)
 			raise Tlog::Error::CommandNotFound, "Time log '#{log_name}' does not exist" unless log
-			current_owner = storage.cur_entry_owner
 			storage.start_log(log, entry_description)
 		end
 	end

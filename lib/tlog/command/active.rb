@@ -1,3 +1,4 @@
+
 class Tlog::Command::Active < Tlog::Command
 
 	def name 

@@ -42,7 +42,7 @@ class Tlog::Command::Display < Tlog::Command
 			start_time = Time.parse(storage.start_time_string)
 		end
 		return if length_exceeds_threshold?(log_length, length_threshold)
-		print_log_name(log_name, output)
+		print_log_info(log, output)
 		print_header(output)
 		print_current(log_name, log_length, start_time, output)
 		display_entries(entries, output) if entries
@@ -59,11 +59,11 @@ class Tlog::Command::Display < Tlog::Command
 	def display_entries(entries, output)
 		if entries.size > 0
 			entries.each do |entry|
-				out_str = "\t%-4s   %16s  %14s   %14s       %s" % [
+				out_str = "\t%-4s   %16s  %14s           %s" % [
 					date_time_format.timestamp(entry.time[:start]),
 					date_time_format.timestamp(entry.time[:end]),
 					seconds_format.duration(entry.length.to_s),
-					entry.owner,
+					#entry.owner,
 					entry.description,
 				]
 				output.line(out_str)
@@ -78,7 +78,7 @@ class Tlog::Command::Display < Tlog::Command
 	end
 
 	def print_header(output)
-		output.line("\tStart               End                    Duration        Owner          Description")
+		output.line("\tStart               End                    Duration          Description")
 	end 
 
 	def print_total(log, output)
@@ -90,8 +90,9 @@ class Tlog::Command::Display < Tlog::Command
 		output.line("\tTotal%45s " % seconds_format.duration(duration))
 	end
 
-	def print_log_name(log_name, output)
-		out_str = "Log:    #{log_name}\nState:  HEY\nPoint:  5\nOwner:  Chris"
+	def print_log_info(log, output)
+		owner = 'none' unless log.owner
+		out_str = "Log:    #{log.name}\nState:  HEY\nPoint:  5\nOwner:  #{owner}"
 		output.line_yellow(out_str)
 	end
 
@@ -111,11 +112,11 @@ class Tlog::Command::Display < Tlog::Command
 	def print_current(log_name, log_length, current_start_time, output)
 		if is_current_log_name?(log_name)
 			formatted_length = seconds_format.duration storage.time_since_start
-			out_str = out_str = "\t%-4s  %16s   %14s   %14s       %s" % [
+			out_str = out_str = "\t%-4s  %16s   %14s           %s" % [
 				date_time_format.timestamp(current_start_time),
 				nil,
 				formatted_length,
-				storage.cur_entry_owner,
+				#storage.cur_entry_owner,
 				storage.cur_entry_description, 
 			]
 			output.line(out_str)

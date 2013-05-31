@@ -19,7 +19,7 @@ class Tlog::Entity::Entry
 		write_file(parent_path, parent)
 		write_file(time_path, time_log.strip)
 		write_file(description_path, current[:description])
-		write_file(owner_path, current[:owner])
+		#write_file(owner_path, current[:owner])
 	end
 
 	def parent_hex
@@ -46,10 +46,6 @@ class Tlog::Entity::Entry
 
 	def description
 		read_file(description_path)
-	end
-
-	def owner 
-		read_file(owner_path)
 	end
 
 	private
@@ -81,10 +77,6 @@ class Tlog::Entity::Entry
 
 	def description_path
 		File.join(@path, 'DESCRIPTION')
-	end
-
-	def owner_path
-		File.join(@path, 'OWNER')
 	end
 
 end

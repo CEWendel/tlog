@@ -35,7 +35,7 @@ class Tlog::Storage::Disk
 
 	def create_log(log)
 		log.path = log_path(log.name)
-		if log.create
+		if log.create(cur_user)
 			git.add
 			git.commit("Created log '#{log.name}'")
 			true
@@ -78,7 +78,7 @@ class Tlog::Storage::Disk
 				:name => current_log_name,
 				:start_time => current_start_time,
 				:description => current_entry_description,
-				:owner => cur_entry_owner
+				#:owner => cur_entry_owner
 			}
 			delete_current(current_hash[:name])
 			log.add_entry(current_hash)
@@ -113,6 +113,10 @@ class Tlog::Storage::Disk
 		current_start_time
 	end
 
+	def cur_user
+		git.config["user.email"].split('@').first rescue ''
+	end
+
 	def time_since_start
 		if Dir.exists?(current_path)
 			difference = Time.now - Time.parse(current_start_time)
@@ -124,10 +128,6 @@ class Tlog::Storage::Disk
 
 	def cur_start_time
 		Time.parse(current_start_time) if current_start_path
-	end
-
-	def cur_entry_owner
-		git.config["user.email"].split('@').first rescue ''
 	end
 
 	def cur_entry_description
