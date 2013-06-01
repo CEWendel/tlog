@@ -35,6 +35,9 @@ require 'tlog/command/display'
 require 'tlog/command/create'
 require 'tlog/command/help'
 require 'tlog/command/checkout'
+require 'tlog/command/state'
+require 'tlog/command/owner'
+require 'tlog/command/points'
 
 require 'tlog/storage/disk'
 

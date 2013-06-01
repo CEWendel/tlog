@@ -1,35 +1,32 @@
 
-class Tlog::Command::Start < Tlog::Command
+class Tlog::Command::Owner < Tlog::Command
 
 	def name 
-		"start"
+		"owner"
 	end 
 
 	def description
-		"starts a new task for a time log"
+		"changes the owner of the checked-out time log"
 	end
 
 	def execute(input, output)
-		start(input.options[:description])
+		new_owner = input.args[0]
+		change_owner(new_owner)
 	end
 
 	def options(parser, options)
-		parser.banner = "usage: tlog start"
-
-    	parser.on("-d", "--description <description>") do |description|
-    		options[:description] = description
-    	end
+		parser.banner = "usage: tlog owner <new_owner>"
 	end
 
 	private
 
-	def start(entry_description)
+	def change_owner(new_owner)
 		storage.in_branch do |wd|
 			checked_out_log = storage.checkout_value
 			raise Tlog::Error::CheckoutInvalid, "No time log is checked out" unless checked_out_log
 			log = storage.require_log(checked_out_log)
 			raise Tlog::Error::TimeLogNotFound, "Time log '#{checked_out_log}' does not exist" unless log
-			storage.start_log(log, entry_description)
+			storage.change_log_owner(log, new_owner)
 		end
 	end
 end

@@ -48,6 +48,7 @@ class Tlog::Storage::Disk
 		log.path = log_path(log.name)
 		if log.delete
 			delete_current(log.name)
+			delete_checkout(log.name)
 			git.remove(log.path, {:recursive => "-r"})
 			git.commit("Deleted log '#{log.name}'")
 			true
@@ -78,12 +79,38 @@ class Tlog::Storage::Disk
 				:name => current_log_name,
 				:start_time => current_start_time,
 				:description => current_entry_description,
-				#:owner => cur_entry_owner
 			}
 			delete_current(current_hash[:name])
 			log.add_entry(current_hash)
 			git.add
 			git.commit("Stopped log '#{log.name}'")
+			true
+		else
+			false
+		end
+	end
+
+	def change_log_state(log, new_state)
+		log.path = log_path(log.name)
+		if log.update_state(new_state)
+			true
+		else
+			false
+		end
+	end
+
+	def change_log_points(log, new_points_value)
+		log.path = log_path(log.name)
+		if log.update_points(new_points_value)
+			true
+		else 
+			false
+		end
+	end
+
+	def change_log_owner(log, new_owner)
+		log.path = log_path(log.name)
+		if log.update_owner(new_owner)
 			true
 		else
 			false
@@ -198,16 +225,26 @@ class Tlog::Storage::Disk
 		end
 	end
 
-	def delete_current(log_name) # Change this method name or add one
+	def delete_current(log_name)
 		if Dir.exists?(current_path)
 			if current_log_name == log_name
 				FileUtils.rm_rf(current_path)
-				git.remove(current_path, {:recursive => 'r'})
+				#git.remove(current_path, {:recursive => 'r'})
 			end
 		else
 			false
 		end
 	end	
+
+	def delete_checkout(log_name)
+		if File.exists?(checkout_path)
+			if checkout_value == log_name
+				FileUtils.rm(checkout_path)
+			end
+		else
+			fals
+		end
+	end 
 
 	def write_to_current(log_name, entry_description)
 		# Create a current object, with a "read" method

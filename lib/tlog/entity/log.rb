@@ -15,6 +15,20 @@ class Tlog::Entity::Log
 		end
 	end
 
+	def create(options)
+		unless Dir.exists?(@path)
+			FileUtils.mkdir_p(@path)
+			state = 'open'
+			points = 0
+			owner = 'none'
+			state = options[:state] if options[:state]
+			points = options[:points] if options[:point]
+			owner = options[:owner] if options[:owner]
+			write_log(state, points, owner)
+			true
+		end
+	end
+
 	def goal_length
 		if File.exists?(goal_path)
 			contents = File.read(goal_path)
@@ -55,19 +69,17 @@ class Tlog::Entity::Log
 		read_file(points_path) if File.exists?(points_path)
 	end
 
-	def create(options)
-		unless Dir.exists?(@path)
-			FileUtils.mkdir_p(@path)
-			state = 'open'
-			points = 0
-			owner = 'none'
-			state = options[:state] if options[:state]
-			points = options[:points] if options[:point]
-			owner = options[:owner] if options[:owner]
-			write_log(state, points, owner)
-			true
-		end
+	def update_state(state)
+		File.open(state_path, 'w'){|f| f.write(state)}
 	end
+
+	def update_points(points)
+		File.open(points_path, 'w'){|f| f.write(points)}
+	end
+
+	def update_owner(owner)
+		File.open(owner_path, 'w'){|f| f.write(owner)}
+	end 
 
 	def add_entry(current)
 		entry_hex = generate_random_hex

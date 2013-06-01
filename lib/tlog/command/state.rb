@@ -1,35 +1,32 @@
 
-class Tlog::Command::Start < Tlog::Command
+class Tlog::Command::State < Tlog::Command
 
 	def name 
-		"start"
+		"state"
 	end 
 
 	def description
-		"starts a new task for a time log"
+		"changes the state of the checked-out time log"
 	end
 
 	def execute(input, output)
-		start(input.options[:description])
+		new_state = input.args[0]
+		change_state(new_state)
 	end
 
 	def options(parser, options)
-		parser.banner = "usage: tlog start"
-
-    	parser.on("-d", "--description <description>") do |description|
-    		options[:description] = description
-    	end
+		parser.banner = "usage: tlog state <new_state>"
 	end
 
 	private
 
-	def start(entry_description)
+	def change_state(new_state)
 		storage.in_branch do |wd|
 			checked_out_log = storage.checkout_value
 			raise Tlog::Error::CheckoutInvalid, "No time log is checked out" unless checked_out_log
 			log = storage.require_log(checked_out_log)
 			raise Tlog::Error::TimeLogNotFound, "Time log '#{checked_out_log}' does not exist" unless log
-			storage.start_log(log, entry_description)
+			storage.change_log_state(log, new_state)
 		end
 	end
 end
