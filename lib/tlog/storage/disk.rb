@@ -33,9 +33,9 @@ class Tlog::Storage::Disk
 		read_file(checkout_path) if File.exists?(checkout_path)
 	end
 
-	def create_log(log)
+	def create_log(log, options = {})
 		log.path = log_path(log.name)
-		if log.create(cur_user)
+		if log.create(options)
 			git.add
 			git.commit("Created log '#{log.name}'")
 			true

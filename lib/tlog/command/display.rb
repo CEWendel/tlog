@@ -1,5 +1,5 @@
 
-# I will love whoever re-writes this class (badly needed) 
+# I will forever love whoever re-writes this class (badly needed) 
 class Tlog::Command::Display < Tlog::Command
 
 	def name
@@ -91,8 +91,7 @@ class Tlog::Command::Display < Tlog::Command
 	end
 
 	def print_log_info(log, output)
-		owner = 'none' unless log.owner
-		out_str = "Log:    #{log.name}\nState:  HEY\nPoint:  5\nOwner:  #{owner}"
+		out_str = "Log:    #{log.name}\nState:  #{log.state}\nPoints: #{log.points}\nOwner:  #{log.owner}"
 		output.line_yellow(out_str)
 	end
 

@@ -5,9 +5,6 @@ class Tlog::Entity::Log
 	attr_accessor :goal
 	attr_accessor :entries
 	attr_accessor :path
-	attr_accessor :points
-	attr_accessor :state
-	attr_accessor :owner
 
 	def initialize(log_path = nil)
 		@entries = []
@@ -50,12 +47,24 @@ class Tlog::Entity::Log
 		read_file(owner_path) if File.exists?(owner_path)
 	end
 
-	def create(current_user)
+	def state
+		read_file(state_path) if File.exists?(state_path)
+	end
+
+	def points
+		read_file(points_path) if File.exists?(points_path)
+	end
+
+	def create(options)
 		unless Dir.exists?(@path)
 			FileUtils.mkdir_p(@path)
-			File.open(owner_path, 'w'){|f| f.write(current_user)}
-			File.open(hold_path, 'w+'){|f| f.write('hold')}
-			File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
+			state = 'open'
+			points = 0
+			owner = 'none'
+			state = options[:state] if options[:state]
+			points = options[:points] if options[:point]
+			owner = options[:owner] if options[:owner]
+			write_log(state, points, owner)
 			true
 		end
 	end
@@ -85,6 +94,14 @@ class Tlog::Entity::Log
 
 	private
 
+	def write_log(state, points, owner)
+		File.open(points_path, 'w'){|f| f.write(points)}
+		File.open(state_path, 'w'){|f| f.write(state)}
+		File.open(owner_path, 'w'){|f| f.write(owner)}
+		File.open(hold_path, 'w+'){|f| f.write('hold')}
+		File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
+	end
+
 	def read_file(path)
 		if File.exists?(path)
 			contents = File.read(path)
@@ -97,6 +114,14 @@ class Tlog::Entity::Log
 			head_content = File.read(head_path)
 			head_content.strip if head_content
 		end
+	end
+
+	def points_path
+		File.join(@path, 'POINTS')
+	end
+
+	def state_path
+		File.join(@path, 'STATE')
 	end
 
 	def owner_path
