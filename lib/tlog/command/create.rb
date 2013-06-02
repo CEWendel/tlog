@@ -15,7 +15,7 @@ class Tlog::Command::Create < Tlog::Command
 		log = Tlog::Entity::Log.new
 		log.name = input.args[0];
 		log.goal = ChronicDuration.parse(input.options[:goal]) if input.options[:goal]
-		raise Tlog::Error::CommandInvalid, "Could create log: Log already exists" unless create_log(log)
+		create_log(log)
 	end
 
 	def options(parser, options)

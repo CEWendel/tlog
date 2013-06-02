@@ -50,6 +50,7 @@ class Tlog::Storage::Disk
 		delete_current(log.name)
 		delete_checkout(log.name)
 
+		# Recursively removes the directory that stores the time log
 		git.remove(log.path, {:recursive => "-r"})
 		git.commit("Deleted log '#{log.name}'")
 	end

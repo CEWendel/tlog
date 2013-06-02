@@ -26,8 +26,10 @@ class Tlog::Entity::Log
 			owner = options[:owner] if options[:owner]
 			write_log(state, points, owner)
 			true
+		else
+			puts "#{@path} already exists"
 		end
-	end
+	end	
 
 	def goal_length
 		if File.exists?(goal_path)

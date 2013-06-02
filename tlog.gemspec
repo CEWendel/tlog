@@ -2,13 +2,13 @@
 Gem::Specification.new do |spec|
 
   spec.name         = "tlog"
-  spec.version      = "0.0.8"
-  spec.date         = "2013-05-27"
+  spec.version      = "0.0.9"
+  spec.date         = "2013-06-02"
 
   spec.required_ruby_version = ">=1.9.3"
 
   spec.summary      = "CLI Project Time Logger"
-  spec.description  = "tlog is a git-based command-line time logger that keeps track the time you've spend on different parts of a project"
+  spec.description  = "tlog is a distributed project time and ticket tracker"
   spec.license      = "GPL-2"
 
   spec.add_dependency("commander", "4.0")
