@@ -59,7 +59,7 @@ class Tlog::Command::Display < Tlog::Command
 	def display_entries(entries, output)
 		if entries.size > 0
 			entries.each do |entry|
-				out_str = "\t%-4s   %16s  %14s           %s" % [
+				out_str = "\t%-4s   %16s %14s           %s" % [
 					date_time_format.timestamp(entry.time[:start]),
 					date_time_format.timestamp(entry.time[:end]),
 					seconds_format.duration(entry.length.to_s),

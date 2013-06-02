@@ -24,11 +24,9 @@ class Tlog::Command::Stop < Tlog::Command
 			raise Tlog::Error::CheckoutInvalid, "No time log is checked out" unless checked_out_log
 			log = storage.require_log(checked_out_log)
 			raise Tlog::Error::TimeLogNotFound, "Time log '#{checked_out_log}' does not exist" unless log
-			current_log_name = storage.current_log_name
-			unless current_log_name = storage.current_log_name
-				raise Tlog::Error::CommandInvalid, "'#{checked_out_log}' is the active time log" 
+			unless storage.stop_log(log)
+				raise Tlog::Error::CommandInvalid, "Failed to stop log '#{checked_out_log}': This time log is not in progress"
 			end
-			storage.stop_log(log)
 		end
 	end
 

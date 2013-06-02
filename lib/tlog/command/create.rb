@@ -30,7 +30,7 @@ class Tlog::Command::Create < Tlog::Command
 
 	def create_log(log)
 		storage.in_branch do |wd|
-			storage.create_log(log)
+			raise Tlog::Error::CommandInvalid, "Time log '#{log.name}' already exists" unless storage.create_log(log)
 		end
 	end
 end

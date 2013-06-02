@@ -21,7 +21,8 @@ class Tlog::Command::Delete < Tlog::Command
 	def delete(log_name)
 		storage.in_branch do |wd|
 			log = storage.require_log(log_name)
-			storage.delete_log(log) if log
+			raise Tlog::Error::TimeLogNotFound, "Time log '#{log_name}' does not exist" unless log
+			storage.delete_log(log) 
 		end
 	end
 

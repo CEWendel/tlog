@@ -46,15 +46,12 @@ class Tlog::Storage::Disk
 
 	def delete_log(log)
 		log.path = log_path(log.name)
-		if log.delete
-			delete_current(log.name)
-			delete_checkout(log.name)
-			git.remove(log.path, {:recursive => "-r"})
-			git.commit("Deleted log '#{log.name}'")
-			true
-		else
-			false
-		end
+		log.delete
+		delete_current(log.name)
+		delete_checkout(log.name)
+
+		git.remove(log.path, {:recursive => "-r"})
+		git.commit("Deleted log '#{log.name}'")
 	end
 
 	def require_log(log_name)
@@ -74,7 +71,7 @@ class Tlog::Storage::Disk
 	end
 
 	def stop_log(log)
-		if Dir.exists?(current_path)
+		if Dir.exists?(current_path) and log.name == checkout_value
 			current_hash = { 
 				:name => current_log_name,
 				:start_time => current_start_time,
@@ -92,29 +89,17 @@ class Tlog::Storage::Disk
 
 	def change_log_state(log, new_state)
 		log.path = log_path(log.name)
-		if log.update_state(new_state)
-			true
-		else
-			false
-		end
+		log.update_state(new_state)
 	end
 
 	def change_log_points(log, new_points_value)
 		log.path = log_path(log.name)
-		if log.update_points(new_points_value)
-			true
-		else 
-			false
-		end
+		log.update_points(new_points_value)
 	end
 
 	def change_log_owner(log, new_owner)
 		log.path = log_path(log.name)
-		if log.update_owner(new_owner)
-			true
-		else
-			false
-		end
+		log.update_owner(new_owner)
 	end
 
 	def log_duration(log_name)
