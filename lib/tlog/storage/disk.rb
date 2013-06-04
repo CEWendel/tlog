@@ -215,7 +215,7 @@ class Tlog::Storage::Disk
 		if Dir.exists?(current_path)
 			if current_log_name == log_name
 				FileUtils.rm_rf(current_path)
-				#git.remove(current_path, {:recursive => 'r'})
+				git.remove(current_path, {:recursive => 'r'})
 			end
 		else
 			false
