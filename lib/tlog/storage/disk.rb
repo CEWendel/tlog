@@ -80,6 +80,7 @@ class Tlog::Storage::Disk
 			}
 			delete_current(current_hash[:name])
 			log.add_entry(current_hash)
+
 			git.add
 			git.commit("Stopped log '#{log.name}'")
 			true
@@ -91,16 +92,25 @@ class Tlog::Storage::Disk
 	def change_log_state(log, new_state)
 		log.path = log_path(log.name)
 		log.update_state(new_state)
+
+		git.add
+		git.commit("Changed state for time log #{log.name}")
 	end
 
 	def change_log_points(log, new_points_value)
 		log.path = log_path(log.name)
 		log.update_points(new_points_value)
+
+		git.add
+		git.commit("Changed points value for time log #{log.name}")
 	end
 
 	def change_log_owner(log, new_owner)
 		log.path = log_path(log.name)
 		log.update_owner(new_owner)
+
+		git.add
+		git.commit("Changed owner for time log #{log.name}")
 	end
 
 	def log_duration(log_name)
