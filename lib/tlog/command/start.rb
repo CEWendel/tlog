@@ -11,7 +11,7 @@ class Tlog::Command::Start < Tlog::Command
 
 	def execute(input, output)
 		updated_log = start(input.options[:description])
-		output.line("Started '#{log.name}'")
+		output.line("Started '#{updated_log.name}'")
 	end
 
 	def options(parser, options)

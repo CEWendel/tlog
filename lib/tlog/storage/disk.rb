@@ -35,6 +35,7 @@ class Tlog::Storage::Disk
 
 	def create_log(log, options = {})
 		log.path = log_path(log.name)
+		options[:owner] = cur_user
 		if log.create(options)
 			git.add
 			git.commit("Created log '#{log.name}'")

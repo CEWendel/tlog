@@ -17,10 +17,13 @@ class Tlog::Entity::Log
 
 	def create(options)
 		unless Dir.exists?(@path)
-			FileUtils.mkdir_p(@path)
+			# Default time log attribute values
 			state = 'open'
 			points = 0
-			owner = 'none'
+			owner = 'none'		
+			
+			FileUtils.mkdir_p(@path)
+			@goal = ChronicDuration.parse(options[:goal]) if options[:goal]
 			state = options[:state] if options[:state]
 			points = options[:points] if options[:point]
 			owner = options[:owner] if options[:owner]
