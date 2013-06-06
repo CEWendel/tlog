@@ -44,6 +44,14 @@ class Tlog::Storage::Disk
 		end
 	end
 
+	def push_logs
+		git.push('origin', 'origin/tlog')
+	end
+
+	def pull_logs
+		git.pull('origin', 'tlog:tlog')
+	end
+
 	def delete_log(log)
 		log.path = log_path(log.name)
 		log.delete

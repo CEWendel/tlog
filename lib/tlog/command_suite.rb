@@ -16,7 +16,9 @@ class Tlog::Command_Suite
 				Tlog::Command::Checkout.new,
 				Tlog::Command::State.new,
 				Tlog::Command::Points.new,
-				Tlog::Command::Owner.new
+				Tlog::Command::Owner.new,
+				Tlog::Command::Push.new,
+				Tlog::Command::Pull.new,
 			]
 			commands.each do |command|
 				command.storage = storage
