@@ -2,7 +2,7 @@
 Gem::Specification.new do |spec|
 
   spec.name         = "tlog"
-  spec.version      = "0.1.4"
+  spec.version      = "0.1.6"
   spec.date         = "2013-06-04"
 
   spec.required_ruby_version = ">=1.9.3"

@@ -45,11 +45,11 @@ class Tlog::Storage::Disk
 	end
 
 	def push_logs
-		git.push('origin', 'origin/tlog')
+		git.push('origin', 'tlog:tlog')
 	end
 
 	def pull_logs
-		git.pull('origin', 'tlog:tlog')
+		git.pull('origin', 'origin/tlog')
 	end
 
 	def delete_log(log)
