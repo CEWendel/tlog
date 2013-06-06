@@ -24,6 +24,10 @@ class Tlog::Command::Checkout < Tlog::Command
 		storage.in_branch do |wd|
 			log = storage.require_log(log_name)
 			raise Tlog::Error::TimeLogNotFound, "Time log '#{log_name}' does not exist" unless log
+			checked_out_log = storage.checkout_value
+			if checked_out_log == log.name
+				raise Tlog::Error::CommandInvalid, "Time log '#{log_name}' is currently checked out " 
+			end
 			storage.checkout_log(log)
 		end
 	end
