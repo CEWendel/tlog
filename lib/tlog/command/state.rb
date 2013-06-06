@@ -11,7 +11,8 @@ class Tlog::Command::State < Tlog::Command
 
 	def execute(input, output)
 		new_state = input.args[0]
-		change_state(new_state)
+		updated_log = change_state(new_state)
+		output.line("Changed state of '#{updated_log.name}' to #{new_state}")
 	end
 
 	def options(parser, options)
@@ -27,6 +28,7 @@ class Tlog::Command::State < Tlog::Command
 			log = storage.require_log(checked_out_log)
 			raise Tlog::Error::TimeLogNotFound, "Time log '#{checked_out_log}' does not exist" unless log
 			storage.change_log_state(log, new_state)
+			log
 		end
 	end
 end

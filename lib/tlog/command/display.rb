@@ -26,11 +26,15 @@ class Tlog::Command::Display < Tlog::Command
 
 	def display(log_name, length_threshold, output)
 		storage.in_branch do |wd|
-			if log_name
-				display_log(log_name, length_threshold, output)
+			if storage.all_log_dirs
+				if log_name
+					display_log(log_name, length_threshold, output)
+				else	
+					display_all(length_threshold, output)
+				end 
 			else
-				display_all(length_threshold, output)
-			end 
+				output.line("No time logs yet");
+			end
 		end
 	end
 

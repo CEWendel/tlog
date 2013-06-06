@@ -64,7 +64,7 @@ class Tlog::Storage::Disk
 	end
 
 	def require_log(log_name)
-		decode_log_path(Pathname.new(log_path(log_name)))
+		decode_log_path(Pathname.new(log_path(log_name))) if logs_path
 	end
 
 	def start_log(log, entry_description)
@@ -175,7 +175,7 @@ class Tlog::Storage::Disk
 	end
 
 	def all_log_dirs
-		Pathname.new(logs_path).children.select { |c| c.directory? }
+		Pathname.new(logs_path).children.select { |c| c.directory? } if Dir.exists?(logs_path)
 	end
 
 	# Code from 'ticgit', temporarily switches to tlog branch 

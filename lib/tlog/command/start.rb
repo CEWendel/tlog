@@ -10,7 +10,8 @@ class Tlog::Command::Start < Tlog::Command
 	end
 
 	def execute(input, output)
-		start(input.options[:description])
+		updated_log = start(input.options[:description])
+		output.line("Started '#{log.name}'")
 	end
 
 	def options(parser, options)
@@ -32,6 +33,7 @@ class Tlog::Command::Start < Tlog::Command
 			unless storage.start_log(log, entry_description)
 				raise Tlog::Error::CommandInvalid, "Time log '#{checked_out_log}' is already in progress"
 			end
+			log
 		end
 	end
 end

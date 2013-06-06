@@ -11,7 +11,8 @@ class Tlog::Command::Points < Tlog::Command
 
 	def execute(input, output)
 		new_points_value = input.args[0]
-		change_state(new_points_value)
+		update_log = change_state(new_points_value)
+		output.line("Changed points of '#{updated_log.name}' to #{new_points_value}")
 	end
 
 	def options(parser, options)
@@ -27,6 +28,7 @@ class Tlog::Command::Points < Tlog::Command
 			log = storage.require_log(checked_out_log)
 			raise Tlog::Error::TimeLogNotFound, "Time log '#{checked_out_log}' does not exist" unless log
 			storage.change_log_points(log, points)
+			log
 		end
 	end
 end

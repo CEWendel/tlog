@@ -9,7 +9,8 @@ class Tlog::Command::Stop < Tlog::Command
 	end
 
 	def execute(input, output)
-		stop
+		updated_log = stop
+		output.line("Stopped '#{updated_log.name}'")
 	end
 
 	def options(parser, options)
@@ -27,6 +28,7 @@ class Tlog::Command::Stop < Tlog::Command
 			unless storage.stop_log(log)
 				raise Tlog::Error::CommandInvalid, "Failed to stop log '#{checked_out_log}': This time log is not in progress"
 			end
+			log
 		end
 	end
 

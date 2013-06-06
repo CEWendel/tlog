@@ -12,6 +12,7 @@ class Tlog::Command::Checkout < Tlog::Command
 	def execute(input, output)
 		raise Tlog::Error::CommandInvalid, "Must specify log name" unless input.args[0]
 		checkout(input.args[0])
+		output.line("Checked-out log '#{input.args[0]}'");
 	end
 
 	def options(parser, options)

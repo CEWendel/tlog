@@ -16,6 +16,7 @@ class Tlog::Command::Create < Tlog::Command
 		log.name = input.args[0];
 		log.goal = ChronicDuration.parse(input.options[:goal]) if input.options[:goal]
 		create_log(log)
+		output.line("Created log '#{log.name}'")
 	end
 
 	def options(parser, options)
