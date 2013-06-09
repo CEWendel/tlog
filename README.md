@@ -26,9 +26,29 @@ $ tlog checkout example
 $ tlog create example --goal 4hr
 ```
 
-### Start a new task on a time log
+### Create a new time log with a state and a points value
 ```bash
-$ tlog start example -d "My task description"
+$ tlog create example --state OPEN --points 10
+```
+
+### Start a new task the checked-out time log
+```bash
+$ tlog start -d "My task description"
+```
+
+### Update the state of the checked-out time log
+```bash
+$ tlog state CLOSED
+```
+
+### Update the points value of the checked-out time log
+```bash
+$ tlog points 10
+```
+
+### Update the owner of the checked-out time log
+```bash
+$ tlog owner cewendel
 ```
 
 ### Stop the current task
@@ -36,12 +56,12 @@ $ tlog start example -d "My task description"
 $ tlog stop example
 ```
 
-### Show active time logs and label the current one, if it exists
+### Show active time logs and label the checked-out log or the in-progress log
 ```bash
 $ tlog active
 All Time Logs:
 testing
-feature1(current)
+feature1(in-progress)
 bug fix
 feature2
 ```
@@ -49,18 +69,23 @@ feature2
 ### Display all the current time logs and their tasks, total time logged and time left.
 ```bash
 $ tlog display
-Log: example1
-	Start               End                    Duration        Owner          Description
-	May 29, 11:57PM    May 29, 11:58PM         0:01:13         chriwend       My Description
+Log:    bugfix1
+State:  CLOSED
+Points: 5
+Owner:  petewallen
+	Start               End                    Duration          Description
+	June 06, 12:28AM   June 06, 12:29AM        0:00:53           still fixing the bug
+	June 06, 12:01AM   June 06, 12:01AM        0:00:08           fixing the bug 
 ----------------------------------------------------------------------------------------------------
-	Total                                      0:01:13 
-Log: example2
-	Start               End                    Duration        Owner          Description
-	May 30, 12:00AM                            0:02:26         chriwend       Fixing bug
-	May 30, 12:00AM    May 30, 12:00AM         0:00:10         chriwend       (no description)
+	Total                                      0:01:01 
+Log:    feature2
+State:  OPEN
+Points: 1
+Owner:  chriwend
+	Start               End                    Duration          Description
+	June 05, 11:46PM   June 05, 11:46PM        0:02:17           creating cool feature2
 ----------------------------------------------------------------------------------------------------
-	Total                                      0:02:36 
-	Time left:                                 3:57:24
+	Total                                      0:02:17 
 ``` 
 
 ### Delete a time log
@@ -69,7 +94,18 @@ $ tlog delete example
 ```
 
 ## Collaboration
-More to come on this after I test it...
+
+tlog makes for easy time and ticket tracking when working with a team. Assuming you have a remote repo that you and others are pushing to, use the <pre>tlog push</pre> and </pre>tlog pull</pre> commands to keep your time logs up to date.
+
+### Pull in new or updated time logs from upstream
+```bash
+$ tlog pull
+```
+
+### Push new or updated time logs upstream
+```bash
+$ tlog push
+```
 
 ## Contributing
 
