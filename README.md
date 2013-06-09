@@ -95,7 +95,7 @@ $ tlog delete example
 
 ## Collaboration
 
-tlog makes for easy time and ticket tracking when working with a team. Assuming you have a remote repo that you and others are pushing to, use the <pre>tlog push</pre> and </pre>tlog pull</pre> commands to keep your time logs up to date.
+tlog makes for easy time and ticket tracking when working with a team. Assuming you have a remote repo that you and others are pushing to, use the `tlog push` and `tlog pull` commands to keep your time logs up to date.
 
 ### Pull in new or updated time logs from upstream
 ```bash
