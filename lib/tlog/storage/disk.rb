@@ -9,7 +9,6 @@ class Tlog::Storage::Disk
 
 	def initialize(git_dir)	
 		@git = Git.open(find_repo(git_dir))
-		# Format class?
 		proj_path = @git.dir.path.downcase.gsub(/[^a-z0-9]+/i, '-')
 
 		@tlog_dir = '~/.tlog'
