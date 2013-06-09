@@ -1,9 +1,12 @@
+$:.push File.expand_path("../lib", __FILE__)
+
+# Used for Tlog::Version
+require 'tlog'
 
 Gem::Specification.new do |spec|
 
   spec.name         = "tlog"
   spec.version      = Tlog::Version
-  spec.date         = "2013-06-04"
 
   spec.required_ruby_version = ">=1.9.3"
 
