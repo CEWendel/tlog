@@ -11,7 +11,7 @@ class Tlog::Command::Display < Tlog::Command
 	end 
 
 	def execute(input, output)
-		raise Tlog::Error::CommandInvalid, "Logging invalid" unless display(input.args[0], input.options, output)
+		display(input.args[0], input.options, output)
 	end
 
 	def options(parser, options)
@@ -85,17 +85,28 @@ class Tlog::Command::Display < Tlog::Command
 
 	def display_log(log_name, options, output)
 		log = storage.require_log(log_name)
+		raise Tlog::Error::CommandInvalid, "Time log '#{log_name}' does not exist" unless log
+		
 		log_length = log.goal_length
 		entries = log.entries
 		if storage.start_time_string && is_current_log_name?(log_name)
 			start_time = Time.parse(storage.start_time_string)
 		end
 		return unless log_valid?(log, options)
+
+		# Print out time log information
 		print_log_info(log, output)
 		print_header(output)
 		print_current(log_name, log_length, start_time, output)
 		display_entries(entries, output) if entries
 		print_footer(log, log_length, output)
+	end
+
+	def display_all(options, output)
+		storage.all_log_dirs.each do |log_path|
+			log_basename = log_path.basename.to_s
+			display_log(log_basename, options, output)
+		end
 	end
 
 	def log_valid?(log, thresholds = {})
@@ -107,13 +118,6 @@ class Tlog::Command::Display < Tlog::Command
 			end
 		end
 		true
-	end
-
-	def display_all(options, output)
-		storage.all_log_dirs.each do |log_path|
-			log_basename = log_path.basename.to_s
-			display_log(log_basename, options, output)
-		end
 	end
 
 	def display_entries(entries, output)
