@@ -1,5 +1,5 @@
 
-# I will forever love whoever re-writes this class (badly needed) 
+# I will forever love whoever re-writes this class
 class Tlog::Command::Display < Tlog::Command
 
 	def name
@@ -7,30 +7,75 @@ class Tlog::Command::Display < Tlog::Command
 	end
 
 	def description
-		"displays shit"
+		"displays information about time logs. command options contrain which time logs are displayed"
 	end 
 
 	def execute(input, output)
-		raise Tlog::Error::CommandInvalid, "Logging invalid" unless display(input.args[0], input.options[:length], output)
+		raise Tlog::Error::CommandInvalid, "Logging invalid" unless display(input.args[0], input.options, output)
 	end
 
 	def options(parser, options)
-		parser.banner = "usage: tlog log <log_name>"
+		parser.banner = "usage: tlog display #{$0} [options]"
 
-		parser.on("-l", "--length <length_threshold>") do |length|
-			options[:length] = length
+		parser.on("-g", "--goal <goal_threshold>") do |goal|
+			options[:goal] = goal
 		end
+
+		parser.on("-o", "--owner a,b,c", Array, "Array of owners to display") do |owners|
+			options[:owners] = owners
+		end
+
+		parser.on("-p", "--points <points_threshold>") do |points|
+			options[:points] = points.to_i
+		end
+
+		parser.on("-s", "--state a,b,c", Array, "Array of states to display") do |states|
+			options[:states] = states
+		end
+
+	end
+
+	# Methods that filter which logs should be displayed
+
+	def log_goal_valid(log, thresholds)
+		goal_threshold = thresholds[:goal]
+		goal_threshold = ChronicDuration.parse(goal_threshold)
+		return false unless log.goal
+		goal_threshold >= log.goal ? valid = true : valid = false
+		valid
+	end
+
+	def log_owners_valid(log, thresholds)
+		owners = thresholds[:owners]
+		owners.each do |owner|
+			return true if log.owner == owner
+		end
+		false
+	end
+
+	def log_points_valid(log, thresholds)
+		points_value = thresholds[:points]
+		log.points >= points_value ? valid = true : valid = false
+		valid
+	end
+
+	def log_states_valid(log, thresholds)
+		states = thresholds[:states]
+		states.each do |state|
+			return true if log.state.downcase == state.downcase
+		end
+		false
 	end
 
 	private
 
-	def display(log_name, length_threshold, output)
+	def display(log_name, options, output)
 		storage.in_branch do |wd|
 			if storage.all_log_dirs
 				if log_name
-					display_log(log_name, length_threshold, output)
+					display_log(log_name, options, output)
 				else	
-					display_all(length_threshold, output)
+					display_all(options, output)
 				end 
 			else
 				output.line("No time logs yet");
@@ -38,14 +83,14 @@ class Tlog::Command::Display < Tlog::Command
 		end
 	end
 
-	def display_log(log_name, length_threshold, output)
+	def display_log(log_name, options, output)
 		log = storage.require_log(log_name)
 		log_length = log.goal_length
 		entries = log.entries
 		if storage.start_time_string && is_current_log_name?(log_name)
 			start_time = Time.parse(storage.start_time_string)
 		end
-		return if length_exceeds_threshold?(log_length, length_threshold)
+		return unless log_valid?(log, options)
 		print_log_info(log, output)
 		print_header(output)
 		print_current(log_name, log_length, start_time, output)
@@ -53,10 +98,21 @@ class Tlog::Command::Display < Tlog::Command
 		print_footer(log, log_length, output)
 	end
 
-	def display_all(length_threshold, output)
+	def log_valid?(log, thresholds = {})
+		thresholds.each do |key, value|
+			attribute_value = key.to_s
+			log_valid_method = "log_#{attribute_value}_valid"
+			if respond_to?(log_valid_method)
+				return false unless self.send(log_valid_method, log, thresholds)
+			end
+		end
+		true
+	end
+
+	def display_all(options, output)
 		storage.all_log_dirs.each do |log_path|
 			log_basename = log_path.basename.to_s
-			display_log(log_basename, length_threshold, output)
+			display_log(log_basename, options, output)
 		end
 	end
 
@@ -122,19 +178,6 @@ class Tlog::Command::Display < Tlog::Command
 			]
 			output.line(out_str)
 			storage.time_since_start
-		end
-	end
-
-	def length_exceeds_threshold?(log_length, length_threshold)
-		if length_threshold and log_length
-			length_threshold = ChronicDuration.parse(length_threshold)
-			if log_length - length_threshold > 0
-				true
-			else
-				false
-			end
-		else
-			false
 		end
 	end
 

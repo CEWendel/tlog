@@ -25,7 +25,7 @@ class Tlog::Entity::Log
 			FileUtils.mkdir_p(@path)
 			@goal = ChronicDuration.parse(options[:goal]) if options[:goal]
 			state = options[:state] if options[:state]
-			points = options[:points] if options[:point]
+			points = options[:points] if options[:points]
 			owner = options[:owner] if options[:owner]
 			write_log(state, points, owner)
 			true
@@ -69,7 +69,7 @@ class Tlog::Entity::Log
 	end
 
 	def points
-		read_file(points_path) if File.exists?(points_path)
+		read_file(points_path).to_i if File.exists?(points_path)
 	end
 
 	def update_state(state)
