@@ -66,27 +66,131 @@ bug fix
 feature2
 ```
  
-### Display all the current time logs and their tasks, total time logged and time left.
+### Display the current time logs and filter which ones are actually displayed
+
+#### Display all time logs
 ```bash
 $ tlog display
-Log:    bugfix1
-State:  CLOSED
+Log:    bugfix
+State:  open
+Points: 10
+Owner:  andrew
+	Start               End                    Duration          Description
+	June 06, 12:45PM   June 06, 12:46PM        1:00:27           fixing really bad bug
+	June 07, 
+----------------------------------------------------------------------------------------------------
+	Total                                      1:00:27 
+	Time left:                                 0:59:33
+Log:    important
+State:  closed
+Points: 0
+Owner:  chris
+	Start               End                    Duration          Description
+----------------------------------------------------------------------------------------------------
+	Total                                      0:00:00 
+Log:    feature1
+State:  hold
 Points: 5
-Owner:  petewallen
+Owner:  peter
 	Start               End                    Duration          Description
-	June 06, 12:28AM   June 06, 12:29AM        0:00:53           still fixing the bug
-	June 06, 12:01AM   June 06, 12:01AM        0:00:08           fixing the bug 
+	June 13, 12:32PM   June 13, 12:33PM        0:00:34           making sure new feature works
+	June 13, 12:29PM   June 13, 12:32PM        0:02:30           working on new feature
 ----------------------------------------------------------------------------------------------------
-	Total                                      0:01:01 
-Log:    feature2
-State:  OPEN
-Points: 1
-Owner:  chriwend
-	Start               End                    Duration          Description
-	June 05, 11:46PM   June 05, 11:46PM        0:02:17           creating cool feature2
-----------------------------------------------------------------------------------------------------
-	Total                                      0:02:17 
+	Total                                      0:03:04 
+	Time left:                                 3:56:56
 ``` 
+
+#### Display a specific time log
+```bash
+$ tlog display feature1
+Log:    feature1
+State:  hold
+Points: 5
+Owner:  peter
+	Start               End                    Duration          Description
+	June 13, 12:32PM   June 13, 12:33PM        0:00:34           making sure new feature works
+	June 13, 12:29PM   June 13, 12:32PM        0:02:30           working on new feature
+----------------------------------------------------------------------------------------------------
+	Total                                      0:03:04 
+	Time left:                                 3:56:56
+```
+
+#### Constrain displayed time logs to only ones with specified states
+```bash
+$ tlog display -s open,hold
+Log:    bugfix
+State:  open
+Points: 10
+Owner:  andrew
+	Start               End                    Duration          Description
+	June 06, 12:45PM   June 06, 12:46PM        1:00:27           fixing really bad bug
+	June 07, 
+----------------------------------------------------------------------------------------------------
+	Total                                      1:00:27 
+	Time left:                                 0:59:33
+Log:    feature1
+State:  hold
+Points: 5
+Owner:  peter
+	Start               End                    Duration          Description
+	June 13, 12:32PM   June 13, 12:33PM        0:00:34           making sure new feature works
+	June 13, 12:29PM   June 13, 12:32PM        0:02:30           working on new feature
+----------------------------------------------------------------------------------------------------
+	Total                                      0:03:04 
+	Time left:                                 3:56:56
+```
+#### Constrain displayed time logs to only ones with specified owners
+```bash
+$ tlog display -o chris,peter
+Log:    important
+State:  closed
+Points: 0
+Owner:  chris
+	Start               End                    Duration          Description
+----------------------------------------------------------------------------------------------------
+	Total                                      0:00:00 
+Log:    feature1
+State:  hold
+Points: 5
+Owner:  peter
+	Start               End                    Duration          Description
+	June 13, 12:32PM   June 13, 12:33PM        0:00:34           making sure new feature works
+	June 13, 12:29PM   June 13, 12:32PM        0:02:30           working on new feature
+----------------------------------------------------------------------------------------------------
+	Total                                      0:03:04 
+	Time left:                                 3:56:56
+```
+
+#### Contrain displayed time logs to only ones that have points values >= the specified points value
+```bash
+$ tlog display -p 10
+Log:    bugfix
+State:  open
+Points: 10
+Owner:  andrew
+	Start               End                    Duration          Description
+	June 06, 12:45PM   June 06, 12:46PM        1:00:27           fixing really bad bug
+	June 07, 
+----------------------------------------------------------------------------------------------------
+	Total                                      1:00:27 
+	Time left:                                 0:59:33
+```
+
+#### Constrain displayed time logs to only ones that have less than the specified amount of time left to finish
+```bash
+$ tlog display -g 1hr
+Log:    bugfix
+State:  open
+Points: 10
+Owner:  andrew
+	Start               End                    Duration          Description
+	June 06, 12:45PM   June 06, 12:46PM        1:00:27           fixing really bad bug
+	June 07, 
+----------------------------------------------------------------------------------------------------
+	Total                                      1:00:27 
+	Time left:                                 0:59:33
+```
+
 
 ### Delete a time log
 ```bash
