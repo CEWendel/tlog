@@ -8,11 +8,11 @@ A git-based CLI to help you with time tracking on your projects.
 $ sudo gem install tlog
 ```
 
-## Usage
+# Usage
+============================================
 * Navigate to a directory that has a git repo
 
-### Create a time log
-============================================
+## Create a time log
 
 #### Create a default time log with no goal
 ```bash
@@ -69,8 +69,7 @@ bug fix
 feature2
 ```
  
-### Display the current time logs and filter which ones are actually displayed
-============================================
+## Display the current time logs and filter which ones are actually displayed
 
 #### Display all time logs
 ```bash
