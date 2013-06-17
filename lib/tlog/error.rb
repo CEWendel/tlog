@@ -10,3 +10,6 @@ end
 
 class Tlog::Error::CheckoutInvalid < StandardError
 end
+
+class Tlog::Error::NotImplementedError < StandardError
+end

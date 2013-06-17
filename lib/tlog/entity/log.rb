@@ -1,165 +1,165 @@
 
 class Tlog::Entity::Log
 
-	attr_accessor :name
-	attr_accessor :goal
-	attr_accessor :entries
-	attr_accessor :path
+  attr_accessor :name
+  attr_accessor :goal
+  attr_accessor :entries
+  attr_accessor :path
 
-	def initialize(log_path = nil)
-		@entries = []
-		if log_path
-			@name = log_path.basename.to_s
-			@path = log_path
-			@goal = goal_length
-		end
-	end
+  def initialize(log_path = nil)
+    @entries = []
+    if log_path
+      @name = log_path.basename.to_s
+      @path = log_path
+      @goal = goal_length
+    end
+  end
 
-	def create(options)
-		unless Dir.exists?(@path)
-			# Default time log attribute values
-			state = 'open'
-			points = 0
-			owner = 'none'		
-			
-			FileUtils.mkdir_p(@path)
-			@goal = ChronicDuration.parse(options[:goal]) if options[:goal]
-			state = options[:state] if options[:state]
-			points = options[:points] if options[:points]
-			owner = options[:owner] if options[:owner]
-			write_log(state, points, owner)
-			true
-		end
-	end	
+  def create(options)
+    unless Dir.exists?(@path)
+      # Default time log attribute values
+      state = 'open'
+      points = 0
+      owner = 'none'    
+      
+      FileUtils.mkdir_p(@path)
+      @goal = ChronicDuration.parse(options[:goal]) if options[:goal]
+      state = options[:state] if options[:state]
+      points = options[:points] if options[:points]
+      owner = options[:owner] if options[:owner]
+      write_log(state, points, owner)
+      true
+    end
+  end 
 
-	def goal_length
-		if File.exists?(goal_path)
-			contents = File.read(goal_path)
-			contents.strip
-			contents.to_i
-		end
-	end
+  def goal_length
+    if File.exists?(goal_path)
+      contents = File.read(goal_path)
+      contents.strip
+      contents.to_i
+    end
+  end
 
-	def entries
-		log_entries = []
-		hex_value = head_hex_value
-		return log_entries unless hex_value
-		begin
-			entry = Tlog::Entity::Entry.new(entry_path(hex_value), hex_value)
-			hex_value = entry.parent_hex
-			log_entries.push(entry)
-		end until hex_value == "none"
-		return log_entries
-	end
+  def entries
+    log_entries = []
+    hex_value = head_hex_value
+    return log_entries unless hex_value
+    begin
+      entry = Tlog::Entity::Entry.new(entry_path(hex_value), hex_value)
+      hex_value = entry.parent_hex
+      log_entries.push(entry)
+    end until hex_value == "none"
+    return log_entries
+  end
 
-	def duration
-		dur = 0
-		entries.each do |entry|
-			dur += entry.length
-		end
-		dur
-	end
+  def duration
+    dur = 0
+    entries.each do |entry|
+      dur += entry.length
+    end
+    dur
+  end
 
-	def owner
-		read_file(owner_path) if File.exists?(owner_path)
-	end
+  def owner
+    read_file(owner_path) if File.exists?(owner_path)
+  end
 
-	def state
-		read_file(state_path) if File.exists?(state_path)
-	end
+  def state
+    read_file(state_path) if File.exists?(state_path)
+  end
 
-	def points
-		read_file(points_path).to_i if File.exists?(points_path)
-	end
+  def points
+    read_file(points_path).to_i if File.exists?(points_path)
+  end
 
-	def update_state(state)
-		File.open(state_path, 'w'){|f| f.write(state)}
-	end
+  def update_state(state)
+    File.open(state_path, 'w'){|f| f.write(state)}
+  end
 
-	def update_points(points)
-		File.open(points_path, 'w'){|f| f.write(points)}
-	end
+  def update_points(points)
+    File.open(points_path, 'w'){|f| f.write(points)}
+  end
 
-	def update_owner(owner)
-		File.open(owner_path, 'w'){|f| f.write(owner)}
-	end 
+  def update_owner(owner)
+    File.open(owner_path, 'w'){|f| f.write(owner)}
+  end 
 
-	def add_entry(current)
-		entry_hex = generate_random_hex
-		new_entry = Tlog::Entity::Entry.new(entry_path(entry_hex), entry_hex)
-		head_hex_value ? parent_hex = head_hex_value : parent_hex = "none"
+  def add_entry(current)
+    entry_hex = generate_random_hex
+    new_entry = Tlog::Entity::Entry.new(entry_path(entry_hex), entry_hex)
+    head_hex_value ? parent_hex = head_hex_value : parent_hex = "none"
 
-		update_head(entry_hex)
-		new_entry.create(parent_hex, current)
-		update_goal(new_entry.length) if goal_length
-	end
+    update_head(entry_hex)
+    new_entry.create(parent_hex, current)
+    update_goal(new_entry.length) if goal_length
+  end
 
-	def update_head(entry_hex)
-		File.open(head_path, 'w'){|f| f.write(entry_hex)}
-	end
+  def update_head(entry_hex)
+    File.open(head_path, 'w'){|f| f.write(entry_hex)}
+  end
 
-	def update_goal(entry_length)
-		new_length = goal_length - entry_length
-		File.open(goal_path, 'w'){|f| f.write(new_length)}
-	end
+  def update_goal(entry_length)
+    new_length = goal_length - entry_length
+    File.open(goal_path, 'w'){|f| f.write(new_length)}
+  end
 
-	def delete
-		FileUtils.rm_rf(@path) if Dir.exists?(@path)
-	end
+  def delete
+    FileUtils.rm_rf(@path) if Dir.exists?(@path)
+  end
 
-	private
+  private
 
-	def write_log(state, points, owner)
-		File.open(points_path, 'w'){|f| f.write(points)}
-		File.open(state_path, 'w'){|f| f.write(state)}
-		File.open(owner_path, 'w'){|f| f.write(owner)}
-		File.open(hold_path, 'w+'){|f| f.write('hold')}
-		File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
-	end
+  def write_log(state, points, owner)
+    File.open(points_path, 'w'){|f| f.write(points)}
+    File.open(state_path, 'w'){|f| f.write(state)}
+    File.open(owner_path, 'w'){|f| f.write(owner)}
+    File.open(hold_path, 'w+'){|f| f.write('hold')}
+    File.open(goal_path, 'w'){|f| f.write(@goal)} if @goal
+  end
 
-	def read_file(path)
-		if File.exists?(path)
-			contents = File.read(path)
-			contents.strip
-		end
-	end
+  def read_file(path)
+    if File.exists?(path)
+      contents = File.read(path)
+      contents.strip
+    end
+  end
 
-	def head_hex_value
-		if File.exists?(head_path)
-			head_content = File.read(head_path)
-			head_content.strip if head_content
-		end
-	end
+  def head_hex_value
+    if File.exists?(head_path)
+      head_content = File.read(head_path)
+      head_content.strip if head_content
+    end
+  end
 
-	def points_path
-		File.join(@path, 'POINTS')
-	end
+  def points_path
+    File.join(@path, 'POINTS')
+  end
 
-	def state_path
-		File.join(@path, 'STATE')
-	end
+  def state_path
+    File.join(@path, 'STATE')
+  end
 
-	def owner_path
-		File.join(@path, 'OWNER')
-	end
+  def owner_path
+    File.join(@path, 'OWNER')
+  end
 
-	def goal_path
-		File.join(@path, 'GOAL')
-	end
+  def goal_path
+    File.join(@path, 'GOAL')
+  end
 
-	def hold_path
-		File.join(@path, '.HOLD')
-	end
+  def hold_path
+    File.join(@path, '.HOLD')
+  end
 
-	def head_path
-		File.join(@path, 'HEAD')
-	end
+  def head_path
+    File.join(@path, 'HEAD')
+  end
 
-	def entry_path(hex)
-		File.join(@path, hex)
-	end
+  def entry_path(hex)
+    File.join(@path, hex)
+  end
 
-	def generate_random_hex
-		SecureRandom.hex(13)
-	end 
+  def generate_random_hex
+    SecureRandom.hex(13)
+  end 
 end
