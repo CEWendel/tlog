@@ -9,7 +9,6 @@ $ sudo gem install tlog
 ```
 
 # Usage
-============================================
 * Navigate to a directory that has a git repo
 
 ## Create a time log
@@ -28,48 +27,7 @@ $ tlog create example --goal 4hr
 ```bash
 $ tlog create example --state OPEN --points 10
 ```
-
-### Check out a time log
-```bash
-$ tlog checkout example
-```
-
-### Start a new task the checked-out time log
-```bash
-$ tlog start -d "My task description"
-```
-
-### Update the state of the checked-out time log
-```bash
-$ tlog state CLOSED
-```
-
-### Update the points value of the checked-out time log
-```bash
-$ tlog points 10
-```
-
-### Update the owner of the checked-out time log
-```bash
-$ tlog owner cewendel
-```
-
-### Stop the current task
-```bash
-$ tlog stop example
-```
-
-### Show active time logs and label the checked-out log or the in-progress log
-```bash
-$ tlog active
-All Time Logs:
-testing
-feature1(in-progress)
-bug fix
-feature2
-```
- 
-## Display the current time logs and filter which ones are actually displayed
+## Displaying time logs
 
 #### Display all time logs
 ```bash
@@ -194,8 +152,49 @@ Owner:  andrew
 	Time left:                                 0:59:33
 ```
 
+#### Show active time logs and label the checked-out log or the in-progress log
+```bash
+$ tlog active
+All Time Logs:
+testing
+feature1(in-progress)
+bug fix
+feature2
+```
 
-### Delete a time log
+## Using time logs
+
+#### Check out a time log
+```bash
+$ tlog checkout example
+```
+
+#### Start a new task the checked-out time log
+```bash
+$ tlog start -d "My task description"
+```
+
+#### Update the state of the checked-out time log
+```bash
+$ tlog state CLOSED
+```
+
+#### Update the points value of the checked-out time log
+```bash
+$ tlog points 10
+```
+
+#### Update the owner of the checked-out time log
+```bash
+$ tlog owner cewendel
+```
+
+#### Stop the current task
+```bash
+$ tlog stop example
+```
+
+#### Delete a time log
 ```bash
 $ tlog delete example
 ```
