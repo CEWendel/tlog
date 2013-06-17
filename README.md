@@ -12,6 +12,9 @@ $ sudo gem install tlog
 * Navigate to a directory that has a git repo
 
 ### Create a time log
+============================================
+
+#### Create a default time log with no goal
 ```bash
 $ tlog create example 
 ```
@@ -67,6 +70,7 @@ feature2
 ```
  
 ### Display the current time logs and filter which ones are actually displayed
+============================================
 
 #### Display all time logs
 ```bash
