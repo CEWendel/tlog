@@ -16,17 +16,17 @@ $ sudo gem install tlog
 $ tlog create example 
 ```
 
-### Check out a time log
+#### Check out a time log
 ```bash
 $ tlog checkout example
 ```
 
-### Create a time log with a time goal
+#### Create a time log with a time goal
 ```bash
 $ tlog create example --goal 4hr
 ```
 
-### Create a new time log with a state and a points value
+#### Create a new time log with a state and a points value
 ```bash
 $ tlog create example --state OPEN --points 10
 ```
