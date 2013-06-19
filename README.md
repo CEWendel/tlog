@@ -27,6 +27,44 @@ $ tlog create example --goal 4hr
 ```bash
 $ tlog create example --state OPEN --points 10
 ```
+
+## Using time logs
+
+#### Check out a time log
+```bash
+$ tlog checkout example
+```
+
+#### Start a new task the checked-out time log
+```bash
+$ tlog start -d "My task description"
+```
+
+#### Update the state of the checked-out time log
+```bash
+$ tlog state CLOSED
+```
+
+#### Update the points value of the checked-out time log
+```bash
+$ tlog points 10
+```
+
+#### Update the owner of the checked-out time log
+```bash
+$ tlog owner cewendel
+```
+
+#### Stop the current task
+```bash
+$ tlog stop example
+```
+
+#### Delete a time log
+```bash
+$ tlog delete example
+```
+
 ## Displaying time logs
 
 #### Display all time logs
@@ -160,43 +198,6 @@ testing
 feature1(in-progress)
 bug fix
 feature2
-```
-
-## Using time logs
-
-#### Check out a time log
-```bash
-$ tlog checkout example
-```
-
-#### Start a new task the checked-out time log
-```bash
-$ tlog start -d "My task description"
-```
-
-#### Update the state of the checked-out time log
-```bash
-$ tlog state CLOSED
-```
-
-#### Update the points value of the checked-out time log
-```bash
-$ tlog points 10
-```
-
-#### Update the owner of the checked-out time log
-```bash
-$ tlog owner cewendel
-```
-
-#### Stop the current task
-```bash
-$ tlog stop example
-```
-
-#### Delete a time log
-```bash
-$ tlog delete example
 ```
 
 ## Collaboration
