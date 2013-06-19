@@ -1,7 +1,7 @@
 tlog
 ============================================
 
-A git-based CLI to help you with time tracking on your projects.
+tlog is a git-based tool to help you with time and ticket tracking on your projects. 
 
 ## Installing
 ```bash
