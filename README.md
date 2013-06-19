@@ -190,9 +190,9 @@ Owner:  andrew
 	Time left:                                 0:59:33
 ```
 
-#### Show active time logs and label the checked-out log or the in-progress log
+#### Show all time logs and label the checked-out log or the in-progress log
 ```bash
-$ tlog active
+$ tlog all
 All Time Logs:
 testing
 feature1(in-progress)
