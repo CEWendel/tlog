@@ -8,8 +8,12 @@ tlog is a git-based tool to help you with time and ticket tracking on your proje
 $ sudo gem install tlog
 ```
 
-# Usage
+## Usage
 * Navigate to a directory that has a git repo
+* Create time logs for project tasks
+* Assign a time goal, owner, points value, or state to each time log
+* Track time working on a task
+* Collaborate by sharing time logs with other people working on your project
 
 ## Create a time log
 
