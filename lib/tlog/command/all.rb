@@ -1,12 +1,12 @@
 
-class Tlog::Command::Active < Tlog::Command
+class Tlog::Command::All < Tlog::Command
 
   def name 
-    "active"
+    "all"
   end 
 
   def description
-    "prints out all active time logs, the time log in-progress if there is one. Or the currently checked-out time log"
+    "prints out all time logs, the time log in-progress if there is one. Or the currently checked-out time log"
   end
 
   def execute(input, output)

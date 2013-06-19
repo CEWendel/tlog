@@ -9,7 +9,7 @@ class Tlog::Command_Suite
         Tlog::Command::Start.new,
         Tlog::Command::Stop.new,
         Tlog::Command::Help.new,
-        Tlog::Command::Active.new,
+        Tlog::Command::All.new,
         Tlog::Command::Delete.new,
         Tlog::Command::Display.new,
         Tlog::Command::Create.new,
