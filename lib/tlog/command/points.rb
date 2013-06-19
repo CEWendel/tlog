@@ -11,7 +11,7 @@ class Tlog::Command::Points < Tlog::Command
 
   def execute(input, output)
     new_points_value = input.args[0]
-    update_log = change_state(new_points_value)
+    updated_log = change_state(new_points_value)
     output.line("Changed points of '#{updated_log.name}' to #{new_points_value}")
   end
 
