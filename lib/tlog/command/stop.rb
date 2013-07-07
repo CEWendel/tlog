@@ -15,7 +15,7 @@ class Tlog::Command::Stop < Tlog::Command
     commit_message = input.options[:message]
     if commit_message
       commit_working_changes(commit_message)
-      output.line("Commiting working changes on current branch: '#{commit_message}'")
+      output.line("'#{commit_message}': Commiting working changes on current branch")
     end
   end
 
