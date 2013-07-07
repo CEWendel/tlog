@@ -10,7 +10,7 @@ class Tlog::Command::Stop < Tlog::Command
 
   def execute(input, output)
     updated_log = stop(input.options[:message])
-    output.line("Stopped '#{updated_log.name}'")
+    #output.line("Stopped '#{updated_log.name}'")
   end
 
   def options(parser, options)
@@ -34,6 +34,6 @@ class Tlog::Command::Stop < Tlog::Command
       end
     end
     storage.commit_working_changes(message) if message
-    log
+    #log
   end
 end
