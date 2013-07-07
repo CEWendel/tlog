@@ -33,6 +33,5 @@ class Tlog::Command::Stop < Tlog::Command
       end
     end
     storage.commit_working_changes(message) if message
-    #log
   end
 end
