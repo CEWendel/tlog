@@ -198,6 +198,11 @@ class Tlog::Storage::Disk
     end
   end
 
+  def commit_working_changes(message)
+    # Commit tracked working changes in current branch
+    git.commit_all(message)
+  end
+
   private
 
   def decode_log_path(log_path)

@@ -9,17 +9,21 @@ class Tlog::Command::Stop < Tlog::Command
   end
 
   def execute(input, output)
-    updated_log = stop
+    updated_log = stop(input.options[:message])
     output.line("Stopped '#{updated_log.name}'")
   end
 
   def options(parser, options)
     parser.banner = "usage: tlog stop"
+
+    parser.on("-am", "--am <commit message>", "Stop current time log and commit tracked working changes") do |message|
+      options[:message] = message
+    end
   end
 
   private
 
-  def stop
+  def stop(message = nil)
     storage.in_branch do |wd|
       checked_out_log = storage.checkout_value
       raise Tlog::Error::CheckoutInvalid, "No time log is checked out" unless checked_out_log
@@ -28,8 +32,8 @@ class Tlog::Command::Stop < Tlog::Command
       unless storage.stop_log(log)
         raise Tlog::Error::CommandInvalid, "Failed to stop log '#{checked_out_log}': This time log is not in progress"
       end
-      log
     end
+    storage.commit_working_changes(message) if message
+    log
   end
-
 end
