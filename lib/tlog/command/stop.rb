@@ -9,8 +9,14 @@ class Tlog::Command::Stop < Tlog::Command
   end
 
   def execute(input, output)
-    updated_log = stop(input.options[:message])
+    updated_log = stop
+    output.line("Stopped '#{updated_log.name}'")
 
+    commit_message = input.options[:message]
+    if commit_message
+      commit_working_changes(commit_message)
+      output.line("Commiting working changes on current branch: '#{commit_message}'")
+    end
   end
 
   def options(parser, options)
