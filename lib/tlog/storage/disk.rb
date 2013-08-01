@@ -126,7 +126,7 @@ class Tlog::Storage::Disk
     if current_log_name == log_name
       duration += time_since_start
     end
-    log_entries(log_name).each do |entry| # should just be able to do log.entries.each
+    log_entries(log_name).each do |entry|
       duration += entry.length
     end
     duration
@@ -251,7 +251,7 @@ class Tlog::Storage::Disk
         FileUtils.rm(checkout_path)
       end
     else
-      fals
+      false
     end
   end 
 

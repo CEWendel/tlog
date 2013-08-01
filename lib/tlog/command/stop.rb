@@ -13,24 +13,31 @@ class Tlog::Command::Stop < Tlog::Command
     output.line("Stopped '#{updated_log.name}'")
 
     # Commit working changes if neccessary
-    commit_message = input.options[:message]
-    if commit_message
-      commit_working_changes(commit_message)
-      output.line("'#{commit_message}': Commiting working changes on current branch")
+    #commit_message = input.options[:message]
+    puts "here"
+    if input.options[:all]
+      puts "here2"
+      commit_working_changes(input.options[:message])
+      output.line("'#{commit_message}': Commiting tracked changes on current branch")
     end
   end
 
   def options(parser, options)
-    parser.banner = "usage: tlog stop"
+    parser.banner = "usage: tlo stop"
 
-    parser.on("-am", "--am <commit message>", "Stop current time log and commit tracked working changes") do |message|
+    parser.on("-a", "--all", "Stop current time log and commit tracked working changes") do |all|
+      options[:all] = all
+    end
+
+    parser.on("-m", "--message <commit_message>", "The commit message you want to be associated with this commit") do |message|
       options[:message] = message
     end
+
   end
 
   private
 
-  def stop(message = nil)
+  def stop
     storage.in_branch do |wd|
       checked_out_log = storage.checkout_value
       raise Tlog::Error::CheckoutInvalid, "No time log is checked out" unless checked_out_log
