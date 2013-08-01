@@ -12,8 +12,6 @@ class Tlog::Command::Stop < Tlog::Command
     updated_log = stop
     output.line("Stopped '#{updated_log.name}'")
 
-    # Commit working changes if neccessary
-    #commit_message = input.options[:message]
     if input.options[:all]
       commit_working_changes(input.options[:message])
       commit_message = input.options[:message]
