@@ -178,13 +178,17 @@ class Tlog::Storage::Disk
     Pathname.new(logs_path).children.select { |c| c.directory? } if Dir.exists?(logs_path)
   end
 
-  # Code from 'ticgit', temporarily switches to tlog branch 
+  def current_branch
+    git.lib.branch_current
+  end
+
+  # Temporarily switches to tlog branch 
   def in_branch(branch_exists = true)
     unless File.directory?(@tlog_working)
       FileUtils.mkdir_p(@tlog_working)
     end
 
-    old_current = git.lib.branch_current
+    old_current = current_branch
     begin
       git.lib.change_head_branch('tlog')
       git.with_index(@tlog_index) do 
