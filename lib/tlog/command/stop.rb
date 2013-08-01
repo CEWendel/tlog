@@ -13,7 +13,8 @@ class Tlog::Command::Stop < Tlog::Command
     output.line("Stopped '#{updated_log.name}'")
     current_branch = storage.current_branch
     if input.options[:all]
-      commit_working_changes(input.options[:message])
+      returnstate = commit_working_changes(input.options[:message])
+      puts "#{returnstate}"
       commit_message = input.options[:message]
       output.line("Commiting tracked changes on current branch")
       output.line("[#{current_branch}] #{commit_message}")

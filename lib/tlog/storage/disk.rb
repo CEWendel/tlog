@@ -212,8 +212,6 @@ class Tlog::Storage::Disk
   def decode_log_path(log_path)
     if Dir.exists?(log_path)
       log = Tlog::Entity::Log.new(log_path)
-      #log_storage.log_path = log_path # add this to the log class...i think task_store may not be neccessary
-      #lgolog.entries = log_storage.entries
     end
     return log
   end
