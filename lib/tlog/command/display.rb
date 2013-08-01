@@ -1,5 +1,4 @@
 
-# I will forever love whoever re-writes this class
 class Tlog::Command::Display < Tlog::Command
 
   def name

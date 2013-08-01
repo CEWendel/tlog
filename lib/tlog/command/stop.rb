@@ -1,3 +1,4 @@
+
 class Tlog::Command::Stop < Tlog::Command
 
   def name 
