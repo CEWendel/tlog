@@ -29,7 +29,6 @@ class Tlog::Command::Stop < Tlog::Command
     parser.on("-m", "--message <commit_message>", "The commit message you want to be associated with this commit") do |message|
       options[:message] = message
     end
-
   end
 
   private
