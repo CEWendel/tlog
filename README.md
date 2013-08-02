@@ -123,6 +123,31 @@ Owner:  peter
 	Time left:                                 3:56:56
 ```
 
+#### Constrain displayed time logs to only ones that have less than the specified amount of time left to finish
+```bash
+$ tlog display -g 1hr
+Log:    bugfix
+State:  open
+Points: 10
+Owner:  andrew
+	Start               End                    Duration          Description
+	June 06, 12:45PM   June 06, 12:46PM        1:00:27           fixing really bad bug
+	June 07, 
+----------------------------------------------------------------------------------------------------
+	Total                                      1:00:27 
+	Time left:                                 0:59:33
+```
+
+#### Show all time logs and label the checked-out log or the in-progress log
+```bash
+$ tlog all
+All Time Logs:
+testing
+feature1(in-progress)
+bug fix
+feature2
+```
+
 #### Constrain displayed time logs to only ones with specified states
 ```bash
 $ tlog display -s open,hold
@@ -182,31 +207,6 @@ Owner:  andrew
 ----------------------------------------------------------------------------------------------------
 	Total                                      1:00:27 
 	Time left:                                 0:59:33
-```
-
-#### Constrain displayed time logs to only ones that have less than the specified amount of time left to finish
-```bash
-$ tlog display -g 1hr
-Log:    bugfix
-State:  open
-Points: 10
-Owner:  andrew
-	Start               End                    Duration          Description
-	June 06, 12:45PM   June 06, 12:46PM        1:00:27           fixing really bad bug
-	June 07, 
-----------------------------------------------------------------------------------------------------
-	Total                                      1:00:27 
-	Time left:                                 0:59:33
-```
-
-#### Show all time logs and label the checked-out log or the in-progress log
-```bash
-$ tlog all
-All Time Logs:
-testing
-feature1(in-progress)
-bug fix
-feature2
 ```
 
 ## Collaboration
