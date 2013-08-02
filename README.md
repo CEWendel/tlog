@@ -66,7 +66,7 @@ $ tlog stop example
 
 #### Stop the current task and commit your tracked working changes to the current branch
 ```bash
-$ tlog stop example -am "My commit message"
+$ tlog stop example -a -m "My commit message"
 ```
 
 #### Delete a time log
