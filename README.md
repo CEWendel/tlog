@@ -64,7 +64,7 @@ $ tlog owner cewendel
 $ tlog stop example
 ```
 
-#### Stop the current task and commit your tracked working changes to the current branch
+#### Stop the current task and commit your tracked changes to the current branch
 ```bash
 $ tlog stop example -a -m "My commit message"
 ```
