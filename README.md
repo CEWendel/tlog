@@ -108,6 +108,16 @@ Owner:  peter
 	Time left:                                 3:56:56
 ``` 
 
+#### Show all time logs and label the checked-out log or the in-progress log
+```bash
+$ tlog all
+All Time Logs:
+testing
+feature1(in-progress)
+bug fix
+feature2
+```
+
 #### Display a specific time log
 ```bash
 $ tlog display feature1
@@ -123,7 +133,7 @@ Owner:  peter
 	Time left:                                 3:56:56
 ```
 
-#### Constrain displayed time logs to only ones that have less than the specified amount of time left to finish
+#### Constrain displayed time logs to only ones that have less than the specified amount of time left
 ```bash
 $ tlog display -g 1hr
 Log:    bugfix
@@ -136,16 +146,6 @@ Owner:  andrew
 ----------------------------------------------------------------------------------------------------
 	Total                                      1:00:27 
 	Time left:                                 0:59:33
-```
-
-#### Show all time logs and label the checked-out log or the in-progress log
-```bash
-$ tlog all
-All Time Logs:
-testing
-feature1(in-progress)
-bug fix
-feature2
 ```
 
 #### Constrain displayed time logs to only ones with specified states
