@@ -142,7 +142,6 @@ Points: 10
 Owner:  andrew
 	Start               End                    Duration          Description
 	June 06, 12:45PM   June 06, 12:46PM        1:00:27           fixing really bad bug
-	June 07, 
 ----------------------------------------------------------------------------------------------------
 	Total                                      1:00:27 
 	Time left:                                 0:59:33
@@ -157,7 +156,6 @@ Points: 10
 Owner:  andrew
 	Start               End                    Duration          Description
 	June 06, 12:45PM   June 06, 12:46PM        1:00:27           fixing really bad bug
-	June 07, 
 ----------------------------------------------------------------------------------------------------
 	Total                                      1:00:27 
 	Time left:                                 0:59:33
