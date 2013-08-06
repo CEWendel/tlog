@@ -3,12 +3,6 @@ tlog
 
 tlog is a git-based tool to help you with time and ticket tracking on your projects. 
 
-## About
-
-tlog is a simple git-based CLI tool that helps you track tickets and the time your team has spent on them. Since all of tlog's data is commited to a branch in your git repository, it is completley distributed. Meaning you can have a seperate time sheet for each project you are working on and your time and ticket tracking data can easily be used in collaboration with other members on your team. 
-
-You can create tickets and track their state, points value, owner and time goal, along with a description of each task done on that ticket and the times it was done between. This makes it very easy to see how much time has been spent on different parts of your project and helps you plan out your future engineering time.
-
 ## Installing
 ```bash
 $ sudo gem install tlog
