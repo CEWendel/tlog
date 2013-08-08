@@ -277,12 +277,12 @@ class Tlog::Storage::Disk
     end
   end
 
-  #Eventually want to take this out and just create the entry on start
   def current_start_time
     read_file(current_start_path)
   end
 
   def current_entry_description
+    puts "current_description_path is #{current_description_path}"
     read_file(current_description_path)
   end
 

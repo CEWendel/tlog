@@ -10,18 +10,24 @@ class Tlog::Command::Stop < Tlog::Command
   end
 
   def execute(input, output)
+    puts "here"
+    commit_message = ""
+    storage.in_branch do |wd|
+      commit_message = storage.cur_entry_description
+      puts "cur entry description is #{storage.cur_entry_description}"
+    end
     updated_log = stop
     output.line("Stopped '#{updated_log.name}'")
     current_branch = storage.current_branch
     if input.options[:all]
-      commit_output = commit_working_changes(input.options[:message])
-      commit_message = input.options[:message]
+      commit_message = input.options[:message] if input.options[:message]
+      commit_output = commit_working_changes(commit_message)
       output.line("#{commit_output}")
     end
   end
 
   def options(parser, options)
-    parser.banner = "usage: tlo stop"
+    parser.banner = "usage: tlog stop"
 
     parser.on("-a", "--all", "Stop current time log and commit tracked working changes") do |all|
       options[:all] = all
