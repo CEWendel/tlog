@@ -10,12 +10,7 @@ class Tlog::Command::Stop < Tlog::Command
   end
 
   def execute(input, output)
-    puts "here"
-    commit_message = ""
-    storage.in_branch do |wd|
-      commit_message = storage.cur_entry_description
-      puts "cur entry description is #{storage.cur_entry_description}"
-    end
+    commit_message = description
     updated_log = stop
     output.line("Stopped '#{updated_log.name}'")
     current_branch = storage.current_branch
@@ -55,5 +50,13 @@ class Tlog::Command::Stop < Tlog::Command
 
   def commit_working_changes(message)
     storage.commit_working_changes(message)
+  end
+
+  def description
+    entry_description = ""
+    storage.in_branch do |wd|
+      entry_description = storage.cur_entry_description
+    end
+    entry_description
   end
 end
