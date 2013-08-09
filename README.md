@@ -69,6 +69,11 @@ $ tlog stop example
 $ tlog stop example -a -m "My commit message"
 ```
 
+### Use your task description as the commit message
+```bash
+$ tlog stop example -a 
+```
+
 #### Delete a time log
 ```bash
 $ tlog delete example
