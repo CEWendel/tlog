@@ -53,7 +53,7 @@ class Tlog::Command::Stop < Tlog::Command
   end
 
   def description
-    entry_description = ""
+    entry_description = nil
     storage.in_branch do |wd|
       entry_description = storage.cur_entry_description
     end
