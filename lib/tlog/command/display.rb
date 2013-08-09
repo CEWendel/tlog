@@ -126,7 +126,7 @@ class Tlog::Command::Display < Tlog::Command
           date_time_format.timestamp(entry.time[:start]),
           date_time_format.timestamp(entry.time[:end]),
           seconds_format.duration(entry.length.to_s),
-          entry.description,
+          entry.description.empty? ? '(no description)' : entry.description
         ]
         output.line(out_str)
       end
@@ -173,11 +173,11 @@ class Tlog::Command::Display < Tlog::Command
   def print_current(log_name, log_length, current_start_time, output)
     if is_current_log_name?(log_name)
       formatted_length = seconds_format.duration storage.time_since_start
-      out_str = out_str = "\t%-4s  %16s%14s         %s" % [
+      out_str = out_str = "\t%-4s  %16s%14s           %s" % [
         date_time_format.timestamp(current_start_time),
         nil,
         formatted_length,
-        storage.cur_entry_description, 
+        storage.cur_entry_description ? storage.cur_entry_description : '(no description)'
       ]
       output.line(out_str)
       storage.time_since_start

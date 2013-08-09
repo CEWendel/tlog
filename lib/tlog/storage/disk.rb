@@ -68,7 +68,6 @@ class Tlog::Storage::Disk
   end
 
   def start_log(log, entry_description)
-    entry_description = '(no description)' unless entry_description
     if update_current(log.name, entry_description)
       create_log(log) # Creates directory if it has not already been created
       git.add
@@ -282,7 +281,6 @@ class Tlog::Storage::Disk
   end
 
   def current_entry_description
-    puts "current_description_path is #{current_description_path}"
     read_file(current_description_path)
   end
 
